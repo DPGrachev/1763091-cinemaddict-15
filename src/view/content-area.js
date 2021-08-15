@@ -1,4 +1,4 @@
-export const createContentAreaTemplate = () => (
+const createContentAreaTemplate = () => (
   `<section class="films">
   <section class="films-list">
     <h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>
@@ -20,3 +20,5 @@ export const createContentAreaTemplate = () => (
   </section>
   </section>`
 );
+
+export {createContentAreaTemplate};

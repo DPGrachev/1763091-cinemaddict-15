@@ -1,4 +1,4 @@
-export const createFilmCardTemplate = () => (
+const createFilmCardTemplate = () => (
   `<article class="film-card">
   <h3 class="film-card__title">Sagebrush Trail</h3>
   <p class="film-card__rating">3.2</p>
@@ -17,3 +17,5 @@ export const createFilmCardTemplate = () => (
   </div>
   </article>`
 );
+
+export {createFilmCardTemplate};
