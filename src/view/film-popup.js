@@ -5,34 +5,16 @@ const calculateRuntime = (runtime) => {
   const minutes = runtime%60;
   return `${hours}h ${minutes}m`;
 };
-const getAllGenres = (genres) => {
-  let allGenres = '';
-  genres.forEach((genre) => {
-    allGenres += `<span class="film-details__genre">${genre}</span> `;
-  });
-  return allGenres;
-};
-const getAllPeople = (peopleArray) => {
-  let allPeople = '';
-  peopleArray.forEach((people, index) => {
-    if ( index >0 ){
-      allPeople += `, ${people}`;
-    }else{
-      allPeople += `${people}`;
-    }
-  });
-  return allPeople;
-};
+const getAllGenres = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span> `).join(' ');
+
+const getAllPeople = (peopleArray) => peopleArray.map((people) => people).join(', ');
 const checkUserDetailsForPopup = (userDetails) => {
   if(userDetails){
     return 'film-details__control-button--active';
   }
 };
-const renderComments = (comments) => {
-  let allComments = '';
-  comments.forEach((comment) => {
-    allComments +=
-    `<li class="film-details__comment">
+
+const createComment = (comment) => `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
       <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
     </span>
@@ -45,9 +27,12 @@ const renderComments = (comments) => {
       </p>
     </div>
     </li>`;
-  });
 
-  return allComments;
+const renderComments = (comments) => {
+  const allComments = comments.map((comment) => createComment(comment)).join(' ');
+  return `<ul class="film-details__comments-list">
+    ${allComments}
+  </ul>`;
 };
 
 const createFilmPopupTemplate = (card) => `<section class="film-details">
@@ -120,11 +105,7 @@ const createFilmPopupTemplate = (card) => `<section class="film-details">
     <div class="film-details__bottom-container">
       <section class="film-details__comments-wrap">
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${card.comments.length}</span></h3>
-
-        <ul class="film-details__comments-list">
           ${renderComments(card.comments)}
-        </ul>
-
         <div class="film-details__new-comment">
           <div class="film-details__add-emoji-label"></div>
 
