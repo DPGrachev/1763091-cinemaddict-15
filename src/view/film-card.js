@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
-const checkUserDetails = (userDetails) => {
+
+const checkUserDetailsForCard = (userDetails) => {
   if(userDetails){
     return 'film-card__controls-item--active';
   }
@@ -18,9 +19,9 @@ const createFilmCardTemplate = (card) => {
   <p class="film-card__description">${description}</p>
   <a class="film-card__comments">${comments.length} comments</a>
   <div class="film-card__controls">
-    <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${checkUserDetails(userDetails.isWachlist)}" type="button">Add to watchlist</button>
-    <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${checkUserDetails(userDetails.isAlreadyWatched)}" type="button">Mark as watched</button>
-    <button class="film-card__controls-item film-card__controls-item--favorite ${checkUserDetails(userDetails.isFavorite)}" type="button">Mark as favorite</button>
+    <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${checkUserDetailsForCard(userDetails.isWachlist)}" type="button">Add to watchlist</button>
+    <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${checkUserDetailsForCard(userDetails.isAlreadyWatched)}" type="button">Mark as watched</button>
+    <button class="film-card__controls-item film-card__controls-item--favorite ${checkUserDetailsForCard(userDetails.isFavorite)}" type="button">Mark as favorite</button>
   </div>
   </article>`;
 };

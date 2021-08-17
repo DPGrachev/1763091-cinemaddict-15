@@ -7,20 +7,20 @@ const calculateRuntime = (runtime) => {
 };
 const getAllGenres = (genres) => {
   let allGenres = '';
-  for (let i=0; i < genres.length; i++ ){
-    allGenres += `<span class="film-details__genre">${genres[i]}</span> `;
-  }
+  genres.forEach((genre) => {
+    allGenres += `<span class="film-details__genre">${genre}</span> `;
+  });
   return allGenres;
 };
 const getAllPeople = (peopleArray) => {
   let allPeople = '';
-  for (let i=0; i < peopleArray.length; i++ ){
-    if (i>0){
-      allPeople += `, ${peopleArray[i]}`;
+  peopleArray.forEach((people, index) => {
+    if ( index >0 ){
+      allPeople += `, ${people}`;
     }else{
-      allPeople += `${peopleArray[i]}`;
+      allPeople += `${people}`;
     }
-  }
+  });
   return allPeople;
 };
 const checkUserDetailsForPopup = (userDetails) => {
@@ -30,22 +30,23 @@ const checkUserDetailsForPopup = (userDetails) => {
 };
 const renderComments = (comments) => {
   let allComments = '';
-  for (let i=0; i < comments.length; i++){
+  comments.forEach((comment) => {
     allComments +=
     `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
-      <img src="./images/emoji/${comments[i].emotion}.png" width="55" height="55" alt="emoji-smile">
+      <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
     </span>
     <div>
-      <p class="film-details__comment-text">${comments[i].comment}</p>
+      <p class="film-details__comment-text">${comment.comment}</p>
       <p class="film-details__comment-info">
-        <span class="film-details__comment-author">${comments[i].author}</span>
-        <span class="film-details__comment-day">${dayjs(comments[i].date).format('YYYY/MM/D HH:mm')}</span>
+        <span class="film-details__comment-author">${comment.author}</span>
+        <span class="film-details__comment-day">${dayjs(comment.date).format('YYYY/MM/D HH:mm')}</span>
         <button class="film-details__comment-delete">Delete</button>
       </p>
     </div>
-  </li>`;
-  }
+    </li>`;
+  });
+
   return allComments;
 };
 
