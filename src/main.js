@@ -1,4 +1,4 @@
-import { render, RenderPosition } from './utils.js';
+import { render, RenderPosition, KeyCode } from './utils.js';
 import SiteMenuView from './view/site-menu.js';
 import HeaderProfileView from './view/header-profile.js';
 import SortFilmsView from './view/sort-films.js';
@@ -34,7 +34,7 @@ const renderFilmCard = (filmCardsContainer, filmCard) => {
   };
 
   const onEscKeyDown = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
+    if (evt.key === KeyCode.ESCAPE) {
       evt.preventDefault();
       closePopup();
       document.removeEventListener('keydown', onEscKeyDown);
