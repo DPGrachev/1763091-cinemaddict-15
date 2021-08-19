@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { createElement } from '../utils';
 
 const calculateRuntime = (runtime) => {
   const hours = Math.floor(runtime/60);
@@ -140,4 +141,27 @@ const createFilmPopupTemplate = (card) => `<section class="film-details">
   </form>
   </section>`;
 
-export {createFilmPopupTemplate};
+class FilmPopup {
+  constructor(card){
+    this._card = card;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmPopupTemplate(this._card);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export default FilmPopup;

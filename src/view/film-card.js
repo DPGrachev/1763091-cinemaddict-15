@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { createElement } from '../utils';
 
 const checkUserDetailsForCard = (userDetails) => {
   if(userDetails){
@@ -26,4 +27,27 @@ const createFilmCardTemplate = (card) => {
   </article>`;
 };
 
-export {createFilmCardTemplate};
+class FilmCard {
+  constructor(card){
+    this._card = card;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmCardTemplate(this._card);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export default FilmCard;

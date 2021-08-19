@@ -1,3 +1,5 @@
+import { createElement } from '../utils';
+
 const getUserRank = (wachedMovies) => {
   if(wachedMovies === 0){
     return '';
@@ -20,4 +22,27 @@ const createHeaderProfileTemplate = (wachedMovies) => (
   </section>`
 );
 
-export {createHeaderProfileTemplate};
+class HeaderProfile {
+  constructor(wachedMovies){
+    this._wachedMovies = wachedMovies;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createHeaderProfileTemplate(this._wachedMovies);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export default HeaderProfile;
