@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { createElement } from '../utils';
+import AbstractView from './abstract';
 
 const checkUserDetailsForCard = (userDetails) => {
   if(userDetails){
@@ -27,26 +27,27 @@ const createFilmCardTemplate = (card) => {
   </article>`;
 };
 
-class FilmCard {
+class FilmCard extends AbstractView{
   constructor(card){
+    super();
     this._card = card;
-    this._element = null;
+    this._onClick = this._onClick.bind(this);
   }
 
   getTemplate() {
     return createFilmCardTemplate(this._card);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _onClick(evt) {
+    evt.preventDefault();
+    this._callback.click();
   }
 
-  removeElement() {
-    this._element = null;
+  setOnClick(callback) {
+    this._callback.click = callback;
+    this.getElement().querySelector('.film-card__poster').addEventListener('click', this._onClick);
+    this.getElement().querySelector('.film-card__title').addEventListener('click', this._onClick);
+    this.getElement().querySelector('.film-card__comments').addEventListener('click', this._onClick);
   }
 }
 
