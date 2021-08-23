@@ -159,7 +159,7 @@ class FilmPopup extends AbstractView{
 
   setOnCloseButtonClick(callback) {
     this._callback.closeButtonClick = callback;
-    this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._onCloseButtonClick, {once: true});
+    this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._onCloseButtonClick);
   }
 }
 
