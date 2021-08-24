@@ -1,4 +1,4 @@
-import { createElement } from '../utils';
+import AbstractView from './abstract';
 
 const getUserRank = (wachedMovies) => {
   if(wachedMovies === 0){
@@ -22,26 +22,14 @@ const createHeaderProfileTemplate = (wachedMovies) => (
   </section>`
 );
 
-class HeaderProfile {
+class HeaderProfile extends AbstractView{
   constructor(wachedMovies){
+    super();
     this._wachedMovies = wachedMovies;
-    this._element = null;
   }
 
   getTemplate() {
     return createHeaderProfileTemplate(this._wachedMovies);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

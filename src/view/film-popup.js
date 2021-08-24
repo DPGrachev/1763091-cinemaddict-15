@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { createElement } from '../utils';
+import AbstractView from './abstract';
 
 const calculateRuntime = (runtime) => {
   const hours = Math.floor(runtime/60);
@@ -141,26 +141,25 @@ const createFilmPopupTemplate = (card) => `<section class="film-details">
   </form>
   </section>`;
 
-class FilmPopup {
+class FilmPopup extends AbstractView{
   constructor(card){
+    super();
     this._card = card;
-    this._element = null;
+    this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
   }
 
   getTemplate() {
     return createFilmPopupTemplate(this._card);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _onCloseButtonClick(evt) {
+    evt.preventDefault();
+    this._callback.closeButtonClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setOnCloseButtonClick(callback) {
+    this._callback.closeButtonClick = callback;
+    this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._onCloseButtonClick);
   }
 }
 
