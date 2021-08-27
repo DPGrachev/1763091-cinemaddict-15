@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
 
 const MOVIE_TITLES = ['begin', 'ironman', 'world', 'hulk', 'spiderman', 'batman', 'superman', 'aquaman', 'cars', 'water', 'love store', 'world of war', 'warcraft', 'sherlock'];
 const DESCRIPTION = ['Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 'Cras aliquet varius magna, non porta ligula feugiat eget.' ,
@@ -47,7 +48,7 @@ const generateComment = () => ({
 });
 
 const generateFilmCard = () => ({
-  id: getRandomInt(0,100),
+  id: nanoid(),
   comments: new Array(getRandomInt(0,5)).fill().map(generateComment),
   filmInfo: {
     title: getRandomArrayElement(MOVIE_TITLES),
