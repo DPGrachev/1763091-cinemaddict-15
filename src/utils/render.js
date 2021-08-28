@@ -1,12 +1,8 @@
-import Abstract from './view/abstract';
+import Abstract from '../view/abstract';
 
 const RenderPosition = {
   AFTERBEGIN: 'afterbegin',
   BEFOREEND: 'beforeend',
-};
-
-const KeyCode = {
-  ESCAPE : 'Escape',
 };
 
 const render = (container, element, place) => {
@@ -45,8 +41,6 @@ const remove = (component) => {
   component.removeElement();
 };
 
-const updateItem = (items, update) => items.map((it) => it.id === update.id ? update : it);
-
 const replace = (newChild, oldChild) => {
   if (oldChild instanceof Abstract) {
     oldChild = oldChild.getElement();
@@ -65,4 +59,4 @@ const replace = (newChild, oldChild) => {
   parent.replaceChild(newChild, oldChild);
 };
 
-export {createElement, replace, render, updateItem, remove, RenderPosition, KeyCode};
+export {createElement, replace, render, remove, RenderPosition};
