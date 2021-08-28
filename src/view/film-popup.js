@@ -162,17 +162,17 @@ class FilmPopup extends AbstractView{
 
   _onWatchlistClick(evt) {
     evt.preventDefault();
-    this._callback.onWatchlistClick();
+    this._callback.onWatchlistClick(this._card);
   }
 
   _onWatchedClick(evt) {
     evt.preventDefault();
-    this._callback.onWatchedClick();
+    this._callback.onWatchedClick(this._card);
   }
 
   _onFavoriteClick(evt) {
     evt.preventDefault();
-    this._callback.favoriteClick();
+    this._callback.onFavoriteClick(this._card);
   }
 
   setOnCloseButtonClick(callback) {
@@ -191,7 +191,7 @@ class FilmPopup extends AbstractView{
   }
 
   setOnFavoriteClick(callback) {
-    this._callback.watchedClick = callback;
+    this._callback.onFavoriteClick = callback;
     this.getElement().querySelector('.film-details__control-button--favorite').addEventListener('click', this._onFavoriteClick);
   }
 }

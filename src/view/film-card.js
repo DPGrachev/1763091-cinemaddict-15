@@ -30,7 +30,7 @@ const createFilmCardTemplate = (card) => {
 class FilmCard extends AbstractView{
   constructor(card){
     super();
-    this.card = card;
+    this._card = card;
     this._onClick = this._onClick.bind(this);
     this._onWatchedClick = this._onWatchedClick.bind(this);
     this._onWatchlistClick = this._onWatchlistClick.bind(this);
@@ -38,7 +38,7 @@ class FilmCard extends AbstractView{
   }
 
   getTemplate() {
-    return createFilmCardTemplate(this.card);
+    return createFilmCardTemplate(this._card);
   }
 
   _onClick(evt) {
@@ -48,17 +48,17 @@ class FilmCard extends AbstractView{
 
   _onWatchlistClick(evt) {
     evt.preventDefault();
-    this._callback.onWatchlistClick();
+    this._callback.onWatchlistClick((this._card));
   }
 
   _onWatchedClick(evt) {
     evt.preventDefault();
-    this._callback.onWatchedClick();
+    this._callback.onWatchedClick(this._card);
   }
 
   _onFavoriteClick(evt) {
     evt.preventDefault();
-    this._callback.onFavoriteClick();
+    this._callback.onFavoriteClick(this._card);
   }
 
   setOnClick(callback) {
@@ -81,6 +81,10 @@ class FilmCard extends AbstractView{
   setOnFavoriteClick(callback) {
     this._callback.onFavoriteClick = callback;
     this.getElement().querySelector('.film-card__controls-item--favorite').addEventListener('click', this._onFavoriteClick);
+  }
+
+  getCard(){
+    return this._card;
   }
 }
 

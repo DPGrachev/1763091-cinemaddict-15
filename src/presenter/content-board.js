@@ -12,14 +12,16 @@ class ContentBoard {
   constructor(contentContainer){
     this._contentContainer = contentContainer;
     this._renderedFilmCardsCount = FILMS_COUNT_PER_STEP;
-    this._contentArea = new ContentAreaView;
-    this._sortFilms = new SortFilmsView;
-    this._showMoreButton = new ShowMoreButtonView;
+    this._contentArea = new ContentAreaView();
+    this._sortFilms = new SortFilmsView();
+    this._showMoreButton = new ShowMoreButtonView();
     this._mainFilmsList = this._contentArea.getElement().querySelector('.main-films-list');
     this._topRatedFilmsList = this._contentArea.getElement().querySelector('.top-rated-films-list');
     this._mostCommentedFilmsList = this._contentArea.getElement().querySelector('.most-commented-films-list');
-    this._EmptyFilmList = new EmptyFilmsListView;
-    this._filmCardPresenter = new Map();
+    this._EmptyFilmList = new EmptyFilmsListView();
+    this._filmCardMainPresenter = new Map();
+    this._filmCardTopRatedPresenter = new Map();
+    this._filmCardMostCommentedPresenter = new Map();
 
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleFilmCardChange = this._handleFilmCardChange.bind(this);
@@ -37,12 +39,30 @@ class ContentBoard {
   _renderFilmCard(card,filmCardContainer){
     const filmCard = new FilmCardPresenter(filmCardContainer, this._handleFilmCardChange);
     filmCard.init(card);
-    this._filmCardPresenter.set(card.id, filmCard);
+
+    switch (filmCardContainer) {
+      case this._mainFilmsList:{
+        this._filmCardMainPresenter.set(card.id, filmCard);
+        break;
+      }
+      case this._topRatedFilmsList:{
+        this._filmCardTopRatedPresenter.set(card.id, filmCard);
+        break;
+      }
+      case this._mostCommentedFilmsList:{
+        this._filmCardMostCommentedPresenter.set(card.id, filmCard);
+        break;
+      }
+    }
   }
 
   _clearFilmsList(){
-    this._filmCardPresenter.forEach((presenter) => presenter.destroy());
-    this._filmCardPresenter.clear();
+    this._filmCardMainPresenter.forEach((presenter) => presenter.destroy());
+    this._filmCardTopRatedPresenter.forEach((presenter) => presenter.destroy());
+    this._filmCardMostCommentedPresenter.forEach((presenter) => presenter.destroy());
+    this._filmCardMainPresenter.clear();
+    this._filmCardTopRatedPresenter.clear();
+    this._filmCardMostCommentedPresenter.clear();
     this._renderedFilmCardsCount = FILMS_COUNT_PER_STEP;
     remove(this._showMoreButton);
   }
@@ -108,7 +128,15 @@ class ContentBoard {
 
   _handleFilmCardChange(updatedFilmCard){
     this._filmCards = updateItem(this._filmCards, updatedFilmCard);
-    this._filmCardPresenter.get(updatedFilmCard.id).init(updatedFilmCard);
+    if(this._filmCardMainPresenter.get(updatedFilmCard.id)){
+      this._filmCardMainPresenter.get(updatedFilmCard.id).init(updatedFilmCard);
+    }
+    if(this._filmCardTopRatedPresenter.get(updatedFilmCard.id)){
+      this._filmCardTopRatedPresenter.get(updatedFilmCard.id).init(updatedFilmCard);
+    }
+    if(this._filmCardMostCommentedPresenter.get(updatedFilmCard.id)){
+      this._filmCardMostCommentedPresenter.get(updatedFilmCard.id).init(updatedFilmCard);
+    }
   }
 }
 

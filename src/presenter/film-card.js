@@ -17,7 +17,6 @@ class FilmCard{
     this._handleEscKeyDown = this._handleEscKeyDown.bind(this);
     this._handlePopapCloseButton = this._handlePopapCloseButton.bind(this);
     this._closePopup = this._closePopup.bind(this);
-    this.init = this.init.bind(this);
   }
 
   init(card){
@@ -54,17 +53,17 @@ class FilmCard{
     remove(prevFilmPopup);
   }
 
-  _handleAddToWatchlistClick(){
+  _handleAddToWatchlistClick(card){
     this._changeData(
       Object.assign(
         {},
-        this._filmCard.card,
+        card,
         {
           userDetails: Object.assign(
             {},
-            this._filmCard.card.userDetails,
+            card.userDetails,
             {
-              isWatchlist: !this._filmCard.card.userDetails.isWatchlist,
+              isWatchlist: !card.userDetails.isWatchlist,
             },
           ),
         },
@@ -72,17 +71,17 @@ class FilmCard{
     );
   }
 
-  _handleFavoriteClick(){
+  _handleFavoriteClick(card){
     this._changeData(
       Object.assign(
         {},
-        this._filmCard.card,
+        card,
         {
           userDetails: Object.assign(
             {},
-            this._filmCard.card.userDetails,
+            card.userDetails,
             {
-              isFavorite: !this._filmCard.card.userDetails.isFavorite,
+              isFavorite: !card.userDetails.isFavorite,
             },
           ),
         },
@@ -90,17 +89,17 @@ class FilmCard{
     );
   }
 
-  _handleWatchedClick(){
+  _handleWatchedClick(card){
     this._changeData(
       Object.assign(
         {},
-        this._filmCard.card,
+        card,
         {
           userDetails: Object.assign(
             {},
-            this._filmCard.card.userDetails,
+            card.userDetails,
             {
-              isAlreadyWatched: !this._filmCard.card.userDetails.isAlreadyWatched,
+              isAlreadyWatched: !card.userDetails.isAlreadyWatched,
             },
           ),
         },
