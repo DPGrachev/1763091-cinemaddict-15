@@ -146,6 +146,9 @@ class FilmPopup extends AbstractView{
     super();
     this._card = card;
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
+    this._onWatchedClick = this._onWatchedClick.bind(this);
+    this._onWatchlistClick = this._onWatchlistClick.bind(this);
+    this._onFavoriteClick = this._onFavoriteClick.bind(this);
   }
 
   getTemplate() {
@@ -157,9 +160,39 @@ class FilmPopup extends AbstractView{
     this._callback.closeButtonClick();
   }
 
+  _onWatchlistClick(evt) {
+    evt.preventDefault();
+    this._callback.onWatchlistClick(this._card);
+  }
+
+  _onWatchedClick(evt) {
+    evt.preventDefault();
+    this._callback.onWatchedClick(this._card);
+  }
+
+  _onFavoriteClick(evt) {
+    evt.preventDefault();
+    this._callback.onFavoriteClick(this._card);
+  }
+
   setOnCloseButtonClick(callback) {
     this._callback.closeButtonClick = callback;
     this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._onCloseButtonClick);
+  }
+
+  setOnWatchlistClick(callback) {
+    this._callback.onWatchlistClick = callback;
+    this.getElement().querySelector('.film-details__control-button--watchlist').addEventListener('click', this._onWatchlistClick);
+  }
+
+  setOnWatchedClick(callback) {
+    this._callback.onWatchedClick = callback;
+    this.getElement().querySelector('.film-details__control-button--watched').addEventListener('click', this._onWatchedClick);
+  }
+
+  setOnFavoriteClick(callback) {
+    this._callback.onFavoriteClick = callback;
+    this.getElement().querySelector('.film-details__control-button--favorite').addEventListener('click', this._onFavoriteClick);
   }
 }
 
