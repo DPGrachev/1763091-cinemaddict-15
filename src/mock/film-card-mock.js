@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
+import { generateDate } from '../utils/card';
+import { getRandomInt } from '../utils/common';
 
 const MOVIE_TITLES = ['begin', 'ironman', 'world', 'hulk', 'spiderman', 'batman', 'superman', 'aquaman', 'cars', 'water', 'love store', 'world of war', 'warcraft', 'sherlock'];
 const DESCRIPTION = ['Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 'Cras aliquet varius magna, non porta ligula feugiat eget.' ,
@@ -17,13 +19,6 @@ const POSTERS = [
   '/images/posters/the-great-flamarion.jpg',
   '/images/posters/the-man-with-the-golden-arm.jpg',
 ];
-
-function getRandomInt (min, max){
-  const lower = Math.ceil(Math.min(Math.abs(min), Math.abs(max)));
-  const upper = Math.floor(Math.max(Math.abs(min), Math.abs(max)));
-  const result = Math.random() * (upper - lower + 1) + lower;
-  return Math.floor(result);
-}
 
 const getRandomArrayElement = (array) => array[getRandomInt(0, array.length - 1)];
 
@@ -43,7 +38,7 @@ const generateComment = () => ({
   id: getRandomInt(0,100),
   author: 'Ilya O\'Reilly',
   comment: 'a film that changed my life, a true masterpiece, post-credit scene was just amazing omg.',
-  date: dayjs().format('YYYY/MM/D HH:mm'),
+  date: generateDate().format('YYYY/MM/D HH:mm'),
   emotion: getRandomArrayElement(COMMENT_EMOTION),
 });
 
@@ -64,7 +59,7 @@ const generateFilmCard = () => ({
       'Morgan Freeman',
     ],
     release: {
-      date: dayjs().format('D/MMMM/YYYY'),
+      date: generateDate().format('D/MMMM/YYYY'),
       releaseCountry: 'Finland',
     },
     runtime: 77,

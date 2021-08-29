@@ -1,4 +1,4 @@
-import { render, RenderPosition } from './utils.js';
+import { render, RenderPosition } from './utils/render.js';
 import SiteMenuView from './view/site-menu.js';
 import HeaderProfileView from './view/header-profile.js';
 import MovieCountView from './view/movie-count.js';

@@ -1,4 +1,5 @@
-import { remove, replace, render, RenderPosition, KeyCode } from '../utils.js';
+import { remove, replace, render, RenderPosition} from '../utils/render.js';
+import { KeyCode } from '../utils/const.js';
 import FilmCardView from '../view/film-card.js';
 import FilmPopupView from '../view/film-popup.js';
 
