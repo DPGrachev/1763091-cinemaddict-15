@@ -21,7 +21,7 @@ class SortFilms extends AbstractView {
   }
 
   _sortTypeChangeHandler(evt){
-    if(!evt.target.classList.contains('sort__button')){
+    if(!evt.target.dataset.sortType){
       return;
     }
 
