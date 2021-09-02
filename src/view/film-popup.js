@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import AbstractView from './abstract';
+import SmartView from './smart';
 
 const calculateRuntime = (runtime) => {
   const hours = Math.floor(runtime/60);
@@ -36,7 +36,7 @@ const renderComments = (comments) => {
   </ul>`;
 };
 
-const createFilmPopupTemplate = (card) => `<section class="film-details">
+const createFilmPopupTemplate = (data) => `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
     <div class="film-details__top-container">
       <div class="film-details__close">
@@ -44,74 +44,76 @@ const createFilmPopupTemplate = (card) => `<section class="film-details">
       </div>
       <div class="film-details__info-wrap">
         <div class="film-details__poster">
-          <img class="film-details__poster-img" src="${card.filmInfo.poster}" alt="">
+          <img class="film-details__poster-img" src="${data.filmInfo.poster}" alt="">
 
-          <p class="film-details__age">${card.filmInfo.ageRating}+</p>
+          <p class="film-details__age">${data.filmInfo.ageRating}+</p>
         </div>
 
         <div class="film-details__info">
           <div class="film-details__info-head">
             <div class="film-details__title-wrap">
-              <h3 class="film-details__title">${card.filmInfo.title}</h3>
-              <p class="film-details__title-original">${card.filmInfo.alternativeTitle}</p>
+              <h3 class="film-details__title">${data.filmInfo.title}</h3>
+              <p class="film-details__title-original">${data.filmInfo.alternativeTitle}</p>
             </div>
 
             <div class="film-details__rating">
-              <p class="film-details__total-rating">${card.filmInfo.rating}</p>
+              <p class="film-details__total-rating">${data.filmInfo.rating}</p>
             </div>
           </div>
 
           <table class="film-details__table">
             <tr class="film-details__row">
               <td class="film-details__term">Director</td>
-              <td class="film-details__cell">${card.filmInfo.director}</td>
+              <td class="film-details__cell">${data.filmInfo.director}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Writers</td>
-              <td class="film-details__cell">${getAllPeople(card.filmInfo.writers)}</td>
+              <td class="film-details__cell">${getAllPeople(data.filmInfo.writers)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Actors</td>
-              <td class="film-details__cell">${getAllPeople(card.filmInfo.actors)}</td>
+              <td class="film-details__cell">${getAllPeople(data.filmInfo.actors)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${dayjs(card.filmInfo.release.date).format('D MMMM YYYY')}</td>
+              <td class="film-details__cell">${dayjs(data.filmInfo.release.date).format('D MMMM YYYY')}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${calculateRuntime(card.filmInfo.runtime)}</td>
+              <td class="film-details__cell">${calculateRuntime(data.filmInfo.runtime)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
-              <td class="film-details__cell">${card.filmInfo.release.releaseCountry}</td>
+              <td class="film-details__cell">${data.filmInfo.release.releaseCountry}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Genres</td>
-              <td class="film-details__cell">${getAllGenres(card.filmInfo.genre)}</td>
+              <td class="film-details__cell">${getAllGenres(data.filmInfo.genre)}</td>
             </tr>
           </table>
 
-          <p class="film-details__film-description">${card.filmInfo.description}</p>
+          <p class="film-details__film-description">${data.filmInfo.description}</p>
         </div>
       </div>
 
       <section class="film-details__controls">
-        <button type="button" class="film-details__control-button ${checkUserDetailsForPopup(card.userDetails.isWatchlist)} film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
-        <button type="button" class="film-details__control-button ${checkUserDetailsForPopup(card.userDetails.isAlreadyWatched)} film-details__control-button--watched" id="watched" name="watched">Already watched</button>
-        <button type="button" class="film-details__control-button ${checkUserDetailsForPopup(card.userDetails.isFavorite)} film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
+        <button type="button" class="film-details__control-button ${checkUserDetailsForPopup(data.userDetails.isWatchlist)} film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
+        <button type="button" class="film-details__control-button ${checkUserDetailsForPopup(data.userDetails.isAlreadyWatched)} film-details__control-button--watched" id="watched" name="watched">Already watched</button>
+        <button type="button" class="film-details__control-button ${checkUserDetailsForPopup(data.userDetails.isFavorite)} film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
       </section>
     </div>
 
     <div class="film-details__bottom-container">
       <section class="film-details__comments-wrap">
-        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${card.comments.length}</span></h3>
-          ${renderComments(card.comments)}
+        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${data.comments.length}</span></h3>
+          ${renderComments(data.comments)}
         <div class="film-details__new-comment">
-          <div class="film-details__add-emoji-label"></div>
+          <div class="film-details__add-emoji-label">
+           ${data.emotion ? `<img src="./images/emoji/${data.emotion}.png" width="55" height="55" alt="emoji">` : ''}
+          </div>
 
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${data.commentText ? data.commentText : ''}</textarea>
           </label>
 
           <div class="film-details__emoji-list">
@@ -141,18 +143,38 @@ const createFilmPopupTemplate = (card) => `<section class="film-details">
   </form>
   </section>`;
 
-class FilmPopup extends AbstractView{
+class FilmPopup extends SmartView{
   constructor(card){
     super();
-    this._card = card;
+    this._data = FilmPopup.parseFilmCardToData(card);
+    this._onEmotionClick = this._onEmotionClick.bind(this);
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
     this._onWatchedClick = this._onWatchedClick.bind(this);
     this._onWatchlistClick = this._onWatchlistClick.bind(this);
     this._onFavoriteClick = this._onFavoriteClick.bind(this);
+    this._commentIntputHandler = this._commentIntputHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createFilmPopupTemplate(this._card);
+    return createFilmPopupTemplate(this._data);
+  }
+
+  _onEmotionClick(evt){
+    evt.preventDefault();
+    const scrollTopPosition = this.getElement().scrollTop;
+    this.updateData({
+      emotion : evt.target.value,
+    });
+    this.getElement().scrollTop = scrollTopPosition;
+    this.getElement()
+      .querySelectorAll('.film-details__emoji-item')
+      .forEach((emotion) => {
+        if(emotion.value === evt.target.value){
+          emotion.setAttribute('checked', 'true');
+        }
+      });
   }
 
   _onCloseButtonClick(evt) {
@@ -162,17 +184,17 @@ class FilmPopup extends AbstractView{
 
   _onWatchlistClick(evt) {
     evt.preventDefault();
-    this._callback.onWatchlistClick(this._card);
+    this._callback.onWatchlistClick(this._data);
   }
 
   _onWatchedClick(evt) {
     evt.preventDefault();
-    this._callback.onWatchedClick(this._card);
+    this._callback.onWatchedClick(this._data);
   }
 
   _onFavoriteClick(evt) {
     evt.preventDefault();
-    this._callback.onFavoriteClick(this._card);
+    this._callback.onFavoriteClick(this._data);
   }
 
   setOnCloseButtonClick(callback) {
@@ -193,6 +215,63 @@ class FilmPopup extends AbstractView{
   setOnFavoriteClick(callback) {
     this._callback.onFavoriteClick = callback;
     this.getElement().querySelector('.film-details__control-button--favorite').addEventListener('click', this._onFavoriteClick);
+  }
+
+  _setInnerHandlers(){
+    this.getElement()
+      .querySelectorAll('.film-details__emoji-item')
+      .forEach((emotion) => emotion.addEventListener('click', this._onEmotionClick));
+    this.getElement()
+      .querySelector('.film-details__comment-input')
+      .addEventListener('input', this._commentIntputHandler);
+  }
+
+  restoreHandlers(){
+    this._setInnerHandlers();
+    this.setOnFavoriteClick(this._callback.onFavoriteClick);
+    this.setOnWatchedClick(this._callback.onWatchedClick);
+    this.setOnWatchlistClick(this._callback.onWatchlistClick);
+    this.setOnCloseButtonClick(this._callback.closeButtonClick);
+  }
+
+  _commentIntputHandler(evt){
+    evt.preventDefault();
+    this.updateData({
+      commentText : evt.target.value,
+    },true);
+  }
+
+  static parseFilmCardToData(filmCard) {
+    return Object.assign(
+      {},
+      filmCard,
+      {
+        emotion: null,
+        commentText: null,
+      },
+    );
+  }
+
+  static parseDataToFilmCard(data) {
+    data = Object.assign({}, data);
+
+    if (!data.emotion) {
+      data.emotion = null;
+    }
+    if (!data.commentText) {
+      data.commentText = null;
+    }
+
+    delete data.emotion;
+    delete data.commentText;
+
+    return data;
+  }
+
+  reset(filmCard){
+    this.updateData(
+      FilmPopup.parseFilmCardToData(filmCard),
+    );
   }
 }
 

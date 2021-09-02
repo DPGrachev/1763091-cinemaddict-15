@@ -130,10 +130,9 @@ class FilmCard{
       this._closePopup();
     }
     bodyElement.classList.add('hide-overflow');
-    bodyElement.appendChild(popup.getElement());
-
     document.addEventListener('keydown',this._handleEscKeyDown);
     bodyElement.appendChild(popup.getElement());
+    this._filmPopup.reset(this._filmCard);
   }
 
   destroy(){
