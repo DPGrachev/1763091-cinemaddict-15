@@ -7,8 +7,8 @@ const sortRatingDown = (cardA, cardB) => cardB.filmInfo.rating - cardA.filmInfo.
 
 const generateDate = () => {
 
-  const maxYearsGap = 30;
-  const YearsGap = getRandomInt(-maxYearsGap, maxYearsGap);
+  const maxYearsGap = 40;
+  const YearsGap = getRandomInt(-maxYearsGap, 0);
 
   return dayjs().add(YearsGap, 'year');
 };
