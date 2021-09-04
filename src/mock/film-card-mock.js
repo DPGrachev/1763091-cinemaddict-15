@@ -38,7 +38,7 @@ const generateComment = () => ({
   id: getRandomInt(0,100),
   author: 'Ilya O\'Reilly',
   comment: 'a film that changed my life, a true masterpiece, post-credit scene was just amazing omg.',
-  date: generateDate().format('YYYY/MM/D HH:mm'),
+  date: generateDate(),
   emotion: getRandomArrayElement(COMMENT_EMOTION),
 });
 
@@ -59,7 +59,7 @@ const generateFilmCard = () => ({
       'Morgan Freeman',
     ],
     release: {
-      date: generateDate().format('D/MMMM/YYYY'),
+      date: generateDate(),
       releaseCountry: 'Finland',
     },
     runtime: 77,
@@ -71,7 +71,7 @@ const generateFilmCard = () => ({
   userDetails: {
     isWatchlist: Boolean(getRandomInt(0, 1)),
     isAlreadyWatched: Boolean(getRandomInt(0, 1)),
-    watchingDate: dayjs().format('D/MMMM/YYYY'),
+    watchingDate: dayjs(),
     isFavorite: Boolean(getRandomInt(0, 1)),
   },
 });

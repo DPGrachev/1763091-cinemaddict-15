@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 import SmartView from './smart';
+import RelativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(RelativeTime);
 
 const calculateRuntime = (runtime) => {
   const hours = Math.floor(runtime/60);
@@ -23,7 +25,7 @@ const createComment = (comment) => `<li class="film-details__comment">
       <p class="film-details__comment-text">${comment.comment}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${comment.author}</span>
-        <span class="film-details__comment-day">${dayjs(comment.date).format('YYYY/MM/D HH:mm')}</span>
+        <span class="film-details__comment-day">${dayjs().to(dayjs(comment.date))}</span>
         <button class="film-details__comment-delete">Delete</button>
       </p>
     </div>
@@ -76,7 +78,7 @@ const createFilmPopupTemplate = (data) => `<section class="film-details">
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${dayjs(data.filmInfo.release.date).format('D MMMM YYYY')}</td>
+              <td class="film-details__cell">${dayjs(data.filmInfo.release.date).format('DD MMMM YYYY')}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
