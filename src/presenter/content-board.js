@@ -191,15 +191,8 @@ class ContentBoard {
   }
 
   _handleViewAction(actionType, updateType, update) {
-    switch (actionType){
-      case UserAction.UPDATE_FILM_CARD: {
-        this._filmsModel.updateFilm(updateType, update);
-        break;
-      }
-      case UserAction.DELETE_COMMENT: {
-        this._filmsModel.deleteComment(updateType, update);
-        break;
-      }
+    if(actionType === UserAction.UPDATE_FILM_CARD){
+      this._filmsModel.updateFilm(updateType, update);
     }
   }
 
