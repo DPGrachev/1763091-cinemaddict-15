@@ -1,25 +1,43 @@
 import AbstractView from './abstract';
 
-const createSiteMenuTemplate = (filter) => (
+const createFilters = (filter, currentFilterType) => {
+  const {type, name, count} = filter;
+
+  return `<a href="#${name}" class="main-navigation__item ${currentFilterType === type? 'main-navigation__item--active': ''}" data-name="${name}">${type === 'All'? 'All movies </a>' : `${name} <span class="main-navigation__item-count">${count}</span></a>`}`;
+};
+
+const createSiteMenuTemplate = (filters, currentFilterType) => (
   `<nav class="main-navigation">
   <div class="main-navigation__items">
-    <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
-    <a href="#watchlist" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">${filter.watchlist}</span></a>
-    <a href="#history" class="main-navigation__item">History <span class="main-navigation__item-count">${filter.alreadyWatched}</span></a>
-    <a href="#favorites" class="main-navigation__item">Favorites <span class="main-navigation__item-count">${filter.favorite}</span></a>
+    ${filters.map((filter) => createFilters(filter, currentFilterType)).join(' ')}
   </div>
   <a href="#stats" class="main-navigation__additional">Stats</a>
   </nav>`
 );
 
 class SiteMenu extends AbstractView {
-  constructor(filter){
+  constructor(filter, currentFilterType){
     super();
     this._filter = filter;
+    this._currentFilterType = currentFilterType;
+
+    this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
   }
 
   getTemplate() {
-    return createSiteMenuTemplate(this._filter);
+    return createSiteMenuTemplate(this._filter, this._currentFilterType);
+  }
+
+  _filterTypeChangeHandler(evt) {
+    evt.preventDefault();
+    this._callback.filterTypeChange(evt.target.dataset.name);
+  }
+
+  setFilterTypeChangeHandler(callback) {
+    this._callback.filterTypeChange = callback;
+    this.getElement()
+      .querySelectorAll('.main-navigation__item ')
+      .forEach((filterButton) => filterButton.addEventListener('click', this._filterTypeChangeHandler));
   }
 }
 
