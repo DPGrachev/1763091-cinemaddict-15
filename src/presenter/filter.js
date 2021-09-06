@@ -1,5 +1,5 @@
 import SiteMenuView from '../view/site-menu';
-import { filter } from '../utils/filter';
+import { filterTypeToCb } from '../utils/filter';
 import { FilterType, UpdateType } from '../utils/const';
 import { render, remove, replace, RenderPosition } from '../utils/render';
 import HeaderProfileView from '../view/header-profile.js';
@@ -71,22 +71,22 @@ class SiteMenu {
       {
         type: FilterType.ALL,
         name: 'All',
-        count: filter[FilterType.ALL](filmCards).length,
+        count: filterTypeToCb[FilterType.ALL](filmCards).length,
       },
       {
         type: FilterType.WATCHLIST,
         name: 'Watchlist',
-        count: filter[FilterType.WATCHLIST](filmCards).length,
+        count: filterTypeToCb[FilterType.WATCHLIST](filmCards).length,
       },
       {
         type: FilterType.HISTORY,
         name: 'History',
-        count: filter[FilterType.HISTORY](filmCards).length,
+        count: filterTypeToCb[FilterType.HISTORY](filmCards).length,
       },
       {
         type: FilterType.FAVORITES,
         name: 'Favorites',
-        count: filter[FilterType.FAVORITES](filmCards).length,
+        count: filterTypeToCb[FilterType.FAVORITES](filmCards).length,
       },
     ];
   }

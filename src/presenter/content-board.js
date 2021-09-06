@@ -1,7 +1,7 @@
 import { render, remove, RenderPosition} from '../utils/render.js';
 import { sortDateDown, sortRatingDown } from '../utils/card.js';
 import { SortType, UserAction, UpdateType, FilterType } from '../utils/const.js';
-import { filter } from '../utils/filter.js';
+import { filterTypeToCb } from '../utils/filter.js';
 import SortFilmsView from '../view/sort-films.js';
 import ContentAreaView from '../view/content-area.js';
 import EmptyFilmsListView from '../view/empty-films-list.js';
@@ -46,7 +46,7 @@ class ContentBoard {
   _getFilms(){
     this._filterType = this._filterModel.getFilter();
     const filmCards = this._filmsModel.getFilms();
-    const filtredFilmCards = filter[this._filterType](filmCards);
+    const filtredFilmCards = filterTypeToCb[this._filterType](filmCards);
 
     switch (this._currentSortType){
       case SortType.DATE_DOWN: {
@@ -105,11 +105,7 @@ class ContentBoard {
       remove(this._emptyFilmList);
     }
 
-    if(resetRenderedFilmCardsCount){
-      this._renderedFilmCardsCount = FILMS_COUNT_PER_STEP;
-    }else{
-      this._renderedFilmCardsCount = Math.min(filmCardCount, this._renderedFilmCardsCount);
-    }
+    this._renderedFilmCardsCount = resetRenderedFilmCardsCount? FILMS_COUNT_PER_STEP : Math.min(filmCardCount, this._renderedFilmCardsCount);
 
     if(resetSortType){
       this._currentSortType = SortType.DEFAULT;
