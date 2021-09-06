@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
 import { generateDate } from '../utils/card';
 import { getRandomInt } from '../utils/common';
@@ -71,7 +70,7 @@ const generateFilmCard = () => ({
   userDetails: {
     isWatchlist: Boolean(getRandomInt(0, 1)),
     isAlreadyWatched: Boolean(getRandomInt(0, 1)),
-    watchingDate: dayjs(),
+    watchingDate: null,
     isFavorite: Boolean(getRandomInt(0, 1)),
   },
 });
