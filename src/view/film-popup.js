@@ -1,6 +1,9 @@
 import dayjs from 'dayjs';
+import he from 'he';
+import { nanoid } from 'nanoid';
 import SmartView from './smart';
 import RelativeTime from 'dayjs/plugin/relativeTime';
+import { KeyCode } from '../utils/const';
 dayjs.extend(RelativeTime);
 
 const calculateRuntime = (runtime) => {
@@ -26,7 +29,7 @@ const createComment = (comment) => `<li class="film-details__comment">
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${comment.author}</span>
         <span class="film-details__comment-day">${dayjs().to(dayjs(comment.date))}</span>
-        <button class="film-details__comment-delete">Delete</button>
+        <button class="film-details__comment-delete" data-id="${comment.id}">Delete</button>
       </p>
     </div>
     </li>`;
@@ -154,6 +157,8 @@ class FilmPopup extends SmartView{
     this._onWatchedClick = this._onWatchedClick.bind(this);
     this._onWatchlistClick = this._onWatchlistClick.bind(this);
     this._onFavoriteClick = this._onFavoriteClick.bind(this);
+    this._onDeleteCommentClick = this._onDeleteCommentClick.bind(this);
+    this._onSubmitNewComment = this._onSubmitNewComment.bind(this);
     this._commentIntputHandler = this._commentIntputHandler.bind(this);
 
     this._setInnerHandlers();
@@ -186,17 +191,63 @@ class FilmPopup extends SmartView{
 
   _onWatchlistClick(evt) {
     evt.preventDefault();
+    const scrollTopPosition = this.getElement().scrollTop;
     this._callback.onWatchlistClick(this._data);
+    if (document.querySelector('.film-details')){
+      document.querySelector('.film-details').scrollTop = scrollTopPosition;
+    }
   }
 
   _onWatchedClick(evt) {
     evt.preventDefault();
+    const scrollTopPosition = this.getElement().scrollTop;
     this._callback.onWatchedClick(this._data);
+    if (document.querySelector('.film-details')){
+      document.querySelector('.film-details').scrollTop = scrollTopPosition;
+    }
   }
 
   _onFavoriteClick(evt) {
     evt.preventDefault();
+    const scrollTopPosition = this.getElement().scrollTop;
     this._callback.onFavoriteClick(this._data);
+    if (document.querySelector('.film-details')){
+      document.querySelector('.film-details').scrollTop = scrollTopPosition;
+    }
+  }
+
+  _onSubmitNewComment(evt) {
+    evt.preventDefault;
+    if(evt.key === KeyCode.ENTER && evt.ctrlKey){
+      this._data.comments.push(this._createNewComment());
+      const scrollTopPosition = this.getElement().scrollTop;
+      this._callback.onSubmitNewComment(FilmPopup.parseDataToFilmCard(this._data));
+      document.querySelector('.film-details').scrollTop = scrollTopPosition;
+    }
+  }
+
+  _createNewComment(){
+    if(!this._data.commentText){
+      throw new Error('Please, write new comment');
+    }
+    if(!this._data.emotion){
+      throw new Error('Please, choose emotion');
+    }
+    return{
+      id: nanoid(),
+      author: 'Dmitrii Grachev',
+      comment: he.encode(this._data.commentText),
+      date: dayjs(),
+      emotion: this._data.emotion,
+    };
+  }
+
+  _onDeleteCommentClick(evt) {
+    evt.preventDefault();
+    const scrollTopPosition = this.getElement().scrollTop;
+    this._data.comments = this._data.comments.filter((comment) => comment.id !== evt.target.dataset.id);
+    this._callback.onDeleteClick(FilmPopup.parseDataToFilmCard(this._data));
+    document.querySelector('.film-details').scrollTop = scrollTopPosition;
   }
 
   setOnCloseButtonClick(callback) {
@@ -219,6 +270,20 @@ class FilmPopup extends SmartView{
     this.getElement().querySelector('.film-details__control-button--favorite').addEventListener('click', this._onFavoriteClick);
   }
 
+  setOnDeleteCommentClick(callback) {
+    this._callback.onDeleteClick = callback;
+    this.getElement()
+      .querySelectorAll('.film-details__comment-delete')
+      .forEach((button) => button.addEventListener('click', this._onDeleteCommentClick));
+  }
+
+  setSubmitNewComment(callback) {
+    this._callback.onSubmitNewComment = callback;
+    this.getElement()
+      .querySelector('.film-details__comment-input')
+      .addEventListener('keydown', this._onSubmitNewComment);
+  }
+
   _setInnerHandlers(){
     this.getElement()
       .querySelectorAll('.film-details__emoji-item')
@@ -234,6 +299,8 @@ class FilmPopup extends SmartView{
     this.setOnWatchedClick(this._callback.onWatchedClick);
     this.setOnWatchlistClick(this._callback.onWatchlistClick);
     this.setOnCloseButtonClick(this._callback.closeButtonClick);
+    this.setOnDeleteCommentClick(this._callback.onDeleteClick);
+    this.setSubmitNewComment(this._callback.onSubmitNewComment);
   }
 
   _commentIntputHandler(evt){

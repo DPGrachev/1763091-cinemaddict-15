@@ -1,23 +1,24 @@
 import AbstractView from './abstract';
 import { SortType } from '../utils/const';
 
-const createSortFilmsTemplate = () => (
+const createSortFilmsTemplate = (sortType) => (
   `<ul class="sort">
-  <li><a href="#" class="sort__button sort__button--active" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
-  <li><a href="#" class="sort__button" data-sort-type="${SortType.DATE_DOWN}">Sort by date</a></li>
-  <li><a href="#" class="sort__button" data-sort-type="${SortType.RATING_DOWN}">Sort by rating</a></li>
+  <li><a href="#" class="sort__button ${sortType === SortType.DEFAULT? 'sort__button--active': ''}" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
+  <li><a href="#" class="sort__button ${sortType === SortType.DATE_DOWN? 'sort__button--active': ''}"  data-sort-type="${SortType.DATE_DOWN}">Sort by date</a></li>
+  <li><a href="#" class="sort__button ${sortType === SortType.RATING_DOWN? 'sort__button--active': ''}" data-sort-type="${SortType.RATING_DOWN}">Sort by rating</a></li>
   </ul>`
 );
 
 class SortFilms extends AbstractView {
-  constructor(){
+  constructor(sortType){
     super();
 
+    this._currentSortType = sortType;
     this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
   }
 
   getTemplate() {
-    return createSortFilmsTemplate();
+    return createSortFilmsTemplate(this._currentSortType);
   }
 
   _sortTypeChangeHandler(evt){

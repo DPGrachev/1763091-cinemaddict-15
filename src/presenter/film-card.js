@@ -1,12 +1,14 @@
 import { remove, replace, render, RenderPosition} from '../utils/render.js';
-import { KeyCode } from '../utils/const.js';
+import { KeyCode, UpdateType, UserAction } from '../utils/const.js';
 import FilmCardView from '../view/film-card.js';
 import FilmPopupView from '../view/film-popup.js';
+import { FilterType } from '../utils/const.js';
 
 const bodyElement = document.querySelector('body');
 
 class FilmCard{
-  constructor(container, changeData){
+  constructor(container, changeData, currentFilterType){
+    this._currentFilterType = currentFilterType;
     this._filmCardContainer = container;
     this._changeData = changeData;
     this._filmCard = null;
@@ -17,11 +19,12 @@ class FilmCard{
     this._handleAddToWatchlistClick = this._handleAddToWatchlistClick.bind(this);
     this._handleEscKeyDown = this._handleEscKeyDown.bind(this);
     this._handlePopapCloseButton = this._handlePopapCloseButton.bind(this);
+    this._handleDeleteCommentClick = this._handleDeleteCommentClick.bind(this);
+    this._handleSubmitNewComment = this._handleSubmitNewComment.bind(this);
     this._closePopup = this._closePopup.bind(this);
   }
 
   init(card){
-
     const prevFilmCard = this._filmCard;
     const prevFilmPopup = this._filmPopup;
 
@@ -38,6 +41,8 @@ class FilmCard{
     this._filmPopup.setOnFavoriteClick(this._handleFavoriteClick);
     this._filmPopup.setOnWatchedClick(this._handleWatchedClick);
     this._filmPopup.setOnCloseButtonClick(this._handlePopapCloseButton);
+    this._filmPopup.setOnDeleteCommentClick(this._handleDeleteCommentClick);
+    this._filmPopup.setSubmitNewComment(this._handleSubmitNewComment);
 
     if(prevFilmCard === null || prevFilmPopup === null){
       render(this._filmCardContainer, this._filmCard, RenderPosition.BEFOREEND);
@@ -56,6 +61,8 @@ class FilmCard{
 
   _handleAddToWatchlistClick(card){
     this._changeData(
+      UserAction.UPDATE_FILM_CARD,
+      this._currentFilterType === FilterType.WATCHLIST? UpdateType.MINOR : UpdateType.PATCH,
       Object.assign(
         {},
         card,
@@ -74,6 +81,8 @@ class FilmCard{
 
   _handleFavoriteClick(card){
     this._changeData(
+      UserAction.UPDATE_FILM_CARD,
+      this._currentFilterType === FilterType.FAVORITES? UpdateType.MINOR : UpdateType.PATCH,
       Object.assign(
         {},
         card,
@@ -92,6 +101,8 @@ class FilmCard{
 
   _handleWatchedClick(card){
     this._changeData(
+      UserAction.UPDATE_FILM_CARD,
+      this._currentFilterType === FilterType.HISTORY? UpdateType.MINOR : UpdateType.PATCH,
       Object.assign(
         {},
         card,
@@ -105,6 +116,22 @@ class FilmCard{
           ),
         },
       ),
+    );
+  }
+
+  _handleDeleteCommentClick(card){
+    this._changeData(
+      UserAction.UPDATE_FILM_CARD,
+      UpdateType.PATCH,
+      card,
+    );
+  }
+
+  _handleSubmitNewComment(card){
+    this._changeData(
+      UserAction.UPDATE_FILM_CARD,
+      UpdateType.PATCH,
+      card,
     );
   }
 
@@ -136,8 +163,10 @@ class FilmCard{
   }
 
   destroy(){
+    if (bodyElement.querySelector('.film-details')){
+      this._closePopup();
+    }
     remove(this._filmCard);
-    remove(this._filmPopup);
   }
 }
 

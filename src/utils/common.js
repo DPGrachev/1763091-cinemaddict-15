@@ -5,6 +5,4 @@ function getRandomInt (min, max){
   return Math.floor(result);
 }
 
-const updateItem = (items, update) => items.map((it) => it.id === update.id ? update : it);
-
-export {getRandomInt, updateItem};
+export {getRandomInt};
