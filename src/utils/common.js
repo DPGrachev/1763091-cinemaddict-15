@@ -5,4 +5,10 @@ function getRandomInt (min, max){
   return Math.floor(result);
 }
 
-export {getRandomInt};
+const calculateRuntime = (runtime) => {
+  const hours = Math.floor(runtime/60);
+  const minutes = runtime%60;
+  return `${hours}h ${minutes}m`;
+};
+
+export {getRandomInt, calculateRuntime};

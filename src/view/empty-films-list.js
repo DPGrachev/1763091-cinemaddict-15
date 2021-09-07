@@ -1,7 +1,7 @@
 import AbstractView from './abstract';
 import { FilterType } from '../utils/const';
 
-const EmptyFilmsListTextType = {
+const textTypeToEmptyFilmsList = {
   [FilterType.ALL]: 'There are no movies in our database',
   [FilterType.WATCHLIST]: 'There are no movies to watch now',
   [FilterType.HISTORY]: 'There are no watched movies now',
@@ -9,7 +9,7 @@ const EmptyFilmsListTextType = {
 };
 
 const createEmptyFilmsList = (filterType) => {
-  const emptyFilmsListTextValue = EmptyFilmsListTextType[filterType];
+  const emptyFilmsListTextValue = textTypeToEmptyFilmsList[filterType];
   return ` <section class="films">
     <section class="films-list">
       <h2 class="films-list__title">${emptyFilmsListTextValue}</h2>

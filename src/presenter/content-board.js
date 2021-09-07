@@ -1,7 +1,7 @@
 import { render, remove, RenderPosition} from '../utils/render.js';
 import { sortDateDown, sortRatingDown } from '../utils/card.js';
 import { SortType, UserAction, UpdateType, FilterType } from '../utils/const.js';
-import { filter } from '../utils/filter.js';
+import { filterTypeToCb } from '../utils/filter.js';
 import SortFilmsView from '../view/sort-films.js';
 import ContentAreaView from '../view/content-area.js';
 import EmptyFilmsListView from '../view/empty-films-list.js';
@@ -17,13 +17,11 @@ class ContentBoard {
     this._renderedFilmCardsCount = FILMS_COUNT_PER_STEP;
     this._filmsModel = filmsModel;
     this._filterModel = filterModel;
-    this._contentArea = new ContentAreaView();
     this._sortFilms = null;
     this._showMoreButton = null;
     this._emptyFilmList = null;
-    this._mainFilmsList = this._contentArea.getElement().querySelector('.main-films-list');
-    this._topRatedFilmsList = this._contentArea.getElement().querySelector('.top-rated-films-list');
-    this._mostCommentedFilmsList = this._contentArea.getElement().querySelector('.most-commented-films-list');
+    this._contentArea = null;
+
     this._filmCardMainPresenter = new Map();
     this._filmCardTopRatedPresenter = new Map();
     this._filmCardMostCommentedPresenter = new Map();
@@ -34,6 +32,7 @@ class ContentBoard {
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+    this.destroy = this.destroy.bind(this);
 
     this._filmsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
@@ -46,14 +45,14 @@ class ContentBoard {
   _getFilms(){
     this._filterType = this._filterModel.getFilter();
     const filmCards = this._filmsModel.getFilms();
-    const filtredFilmCards = filter[this._filterType](filmCards);
+    const filtredFilmCards = filterTypeToCb[this._filterType](filmCards);
 
     switch (this._currentSortType){
       case SortType.DATE_DOWN: {
-        return filtredFilmCards.sort(sortDateDown);
+        return filtredFilmCards.slice().sort(sortDateDown);
       }
       case SortType.RATING_DOWN: {
-        return filtredFilmCards.sort(sortRatingDown);
+        return filtredFilmCards.slice().sort(sortRatingDown);
       }
     }
     return filtredFilmCards;
@@ -99,17 +98,13 @@ class ContentBoard {
     this._filmCardTopRatedPresenter.clear();
     this._filmCardMostCommentedPresenter.clear();
     remove(this._sortFilms);
-    remove(this._showMoreButton);
+    remove(this._contentArea);
 
     if(this._emptyFilmList){
       remove(this._emptyFilmList);
     }
 
-    if(resetRenderedFilmCardsCount){
-      this._renderedFilmCardsCount = FILMS_COUNT_PER_STEP;
-    }else{
-      this._renderedFilmCardsCount = Math.min(filmCardCount, this._renderedFilmCardsCount);
-    }
+    this._renderedFilmCardsCount = resetRenderedFilmCardsCount? FILMS_COUNT_PER_STEP : Math.min(filmCardCount, this._renderedFilmCardsCount);
 
     if(resetSortType){
       this._currentSortType = SortType.DEFAULT;
@@ -135,7 +130,6 @@ class ContentBoard {
     if (this._currentSortType === sortType) {
       return;
     }
-
     this._currentSortType = sortType;
     this._clearFilmsList({resetRenderedFilmCardsCount: true});
     this._renderContenArea();
@@ -166,7 +160,7 @@ class ContentBoard {
 
   _renderEmptyFilmList(){
     this._emptyFilmList = new EmptyFilmsListView(this._filterType);
-    render(this._mainFilmsList, this._emptyFilmList, RenderPosition.BEFOREEND);
+    render(this._contentContainer, this._emptyFilmList, RenderPosition.BEFOREEND);
   }
 
   _renderContenArea(){
@@ -178,6 +172,11 @@ class ContentBoard {
       return;
     }
 
+    this._contentArea = new ContentAreaView();
+    this._mainFilmsList = this._contentArea.getElement().querySelector('.main-films-list');
+    this._topRatedFilmsList = this._contentArea.getElement().querySelector('.top-rated-films-list');
+    this._mostCommentedFilmsList = this._contentArea.getElement().querySelector('.most-commented-films-list');
+
     this._renderSortFilms();
     render(this._contentContainer,this._contentArea, RenderPosition.BEFOREEND);
     this._renderFilmCards(filmCards.slice(0,Math.min(this._renderedFilmCardsCount, filmCardsCount)), this._mainFilmsList);
@@ -188,6 +187,10 @@ class ContentBoard {
 
     this._renderTopRatedFilms();
     this._renderMostCommentedFilms();
+  }
+
+  destroy(){
+    this._clearFilmsList({resetRenderedFilmCardsCount: true, resetSortType: true});
   }
 
   _handleViewAction(actionType, updateType, update) {

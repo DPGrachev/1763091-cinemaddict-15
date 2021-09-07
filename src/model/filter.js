@@ -7,9 +7,11 @@ class Filter extends AbstractObserver {
     this._activeFilter = FilterType.ALL;
   }
 
-  setFilter(updateType, filter) {
+  setFilter(filter, updateType) {
     this._activeFilter = filter;
-    this._notify(updateType, filter);
+    if(updateType){
+      this._notify(updateType, filter);
+    }
   }
 
   getFilter() {
