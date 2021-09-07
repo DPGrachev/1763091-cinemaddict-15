@@ -11,7 +11,7 @@ const createSiteMenuTemplate = (filters, currentFilterType) => (
   <div class="main-navigation__items">
     ${filters.map((filter) => createFilters(filter, currentFilterType)).join(' ')}
   </div>
-  <a href="#stats" class="main-navigation__additional ${currentFilterType === 'null'? 'main-navigation__additional--active': ''}">Stats</a>
+  <a href="#stats" class="main-navigation__additional ${currentFilterType === null? 'main-navigation__additional--active': ''}">Stats</a>
   </nav>`
 );
 
@@ -33,7 +33,7 @@ class SiteMenu extends AbstractView {
   }
 
   _filterTypeChangeHandler(evt) {
-    if(evt.target.tagName !== 'SPAN'){
+    if(evt.target.dataset.name){
       evt.preventDefault();
       this._callback.filterTypeChange(evt.target.dataset.name);
     }

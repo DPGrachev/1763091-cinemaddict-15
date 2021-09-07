@@ -4,18 +4,15 @@ import SmartView from './smart';
 import dayjs from 'dayjs';
 import { getWatchedFilmsChart } from '../utils/statistic';
 
-const getTotalDuration = (films) => {
-  let totalDuration = 0;
-  films.forEach((film) => totalDuration += film.filmInfo.runtime);
-  return totalDuration;
-};
+const TOP_GENRE_INDEX = 0;
+const BAR_HEIGHT = 50;
+
+const getTotalDuration = (films) => films.reduce((acc, film) => acc += film.filmInfo.runtime,0);
 
 const renderGenresChart = (statisticCtx, data) => {
   const {films, dateTo, dateFrom, currentInput} = data;
   const WatchedFilmsChart = getWatchedFilmsChart(films, dateTo, dateFrom, currentInput);
 
-
-  const BAR_HEIGHT = 50;
   statisticCtx.height = BAR_HEIGHT * WatchedFilmsChart.uniqGenres.length;
 
   return new Chart(statisticCtx, {
@@ -78,7 +75,6 @@ const renderGenresChart = (statisticCtx, data) => {
 
 const createStatsTemplate = (data, userRank) => {
   const {films, dateTo, dateFrom, currentInput} = data;
-  const TOP_GENRE_INDEX = 0;
   const WatchedFilmsChart = getWatchedFilmsChart(films, dateTo, dateFrom, currentInput);
   const totalDuration = getTotalDuration(WatchedFilmsChart.watchedFilms);
 

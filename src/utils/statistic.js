@@ -55,7 +55,7 @@ const getWatchedFilmsChart = (films, dateTo, dateFrom, currentInput) => {
   uniqGenresWithotSort.forEach((genre, index) => genreAndCount[genre] = filmsByGenresCount[index]);
   genreAndCount = Object.entries(genreAndCount);
   genreAndCount.sort((a, b) => b[1]-a[1]);
-  genreAndCount.map((genre) => {
+  genreAndCount.forEach((genre) => {
     WatchedFilmsChart.uniqGenres.push(genre[0]);
     WatchedFilmsChart.filmsByGenresCount.push(genre[1]);
   });
