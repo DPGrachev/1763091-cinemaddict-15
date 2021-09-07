@@ -8,6 +8,7 @@ const DESCRIPTION = ['Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.', 'Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.',
   'Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat.',' Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.'];
 const MAX_LENGTH_DESCRIPTION = 5;
+const GENRES = ['Sci-Fi', 'Animation', 'Fantasy', 'Comedy', 'TV Series'];
 const COMMENT_EMOTION = ['smile', 'sleeping', 'puke', 'angry'];
 const POSTERS = [
   '/images/posters/made-for-each-other.png',
@@ -62,9 +63,7 @@ const generateFilmCard = () => ({
       releaseCountry: 'Finland',
     },
     runtime: 77,
-    genre: [
-      'Comedy',
-    ],
+    genre: getRandomLengthArray(GENRES, 3),
     description: getRandomLengthArray(DESCRIPTION,MAX_LENGTH_DESCRIPTION),
   },
   userDetails: {

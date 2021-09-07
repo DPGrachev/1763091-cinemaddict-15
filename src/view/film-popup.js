@@ -4,13 +4,9 @@ import { nanoid } from 'nanoid';
 import SmartView from './smart';
 import RelativeTime from 'dayjs/plugin/relativeTime';
 import { KeyCode } from '../utils/const';
+import { calculateRuntime } from '../utils/common';
 dayjs.extend(RelativeTime);
 
-const calculateRuntime = (runtime) => {
-  const hours = Math.floor(runtime/60);
-  const minutes = runtime%60;
-  return `${hours}h ${minutes}m`;
-};
 const getAllGenres = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span> `).join(' ');
 
 const getAllPeople = (peopleArray) => peopleArray.map((people) => people).join(', ');
@@ -92,7 +88,7 @@ const createFilmPopupTemplate = (data) => `<section class="film-details">
               <td class="film-details__cell">${data.filmInfo.release.releaseCountry}</td>
             </tr>
             <tr class="film-details__row">
-              <td class="film-details__term">Genres</td>
+              <td class="film-details__term">${data.filmInfo.genre.length > 1? 'Genres': 'Genre'} </td>
               <td class="film-details__cell">${getAllGenres(data.filmInfo.genre)}</td>
             </tr>
           </table>

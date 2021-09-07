@@ -1,8 +1,8 @@
-import { filterTypeToCb } from '../utils/filter';
-import { FilterType } from '../utils/const';
+import Chart from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import SmartView from './smart';
 import dayjs from 'dayjs';
-import { watchedFilmsInDateRange } from '../utils/statistic';
+import { getWatchedFilmsChart } from '../utils/statistic';
 
 const getTotalDuration = (films) => {
   let totalDuration = 0;
@@ -10,17 +10,83 @@ const getTotalDuration = (films) => {
   return totalDuration;
 };
 
-const createStatsTemplate = (data) => {
+const renderGenresChart = (statisticCtx, data) => {
   const {films, dateTo, dateFrom, currentInput} = data;
-  const watchedFilms = watchedFilmsInDateRange(films, dateTo, dateFrom, currentInput);
-  const watchedFilmsCount = watchedFilms.length;
-  const totalDuration = getTotalDuration(watchedFilms);
+  const WatchedFilmsChart = getWatchedFilmsChart(films, dateTo, dateFrom, currentInput);
+
+
+  const BAR_HEIGHT = 50;
+  statisticCtx.height = BAR_HEIGHT * WatchedFilmsChart.uniqGenres.length;
+
+  return new Chart(statisticCtx, {
+    plugins: [ChartDataLabels],
+    type: 'horizontalBar',
+    data: {
+      labels: WatchedFilmsChart.uniqGenres,
+      datasets: [{
+        data: WatchedFilmsChart.filmsByGenresCount,
+        backgroundColor: '#ffe800',
+        hoverBackgroundColor: '#ffe800',
+        anchor: 'start',
+      }],
+    },
+    options: {
+      plugins: {
+        datalabels: {
+          font: {
+            size: 20,
+          },
+          color: '#ffffff',
+          anchor: 'start',
+          align: 'start',
+          offset: 40,
+        },
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            fontColor: '#ffffff',
+            padding: 100,
+            fontSize: 20,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+          barThickness: 24,
+        }],
+        xAxes: [{
+          ticks: {
+            display: false,
+            beginAtZero: true,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+        }],
+      },
+      legend: {
+        display: false,
+      },
+      tooltips: {
+        enabled: false,
+      },
+    },
+  });
+};
+
+const createStatsTemplate = (data, userRank) => {
+  const {films, dateTo, dateFrom, currentInput} = data;
+  const TOP_GENRE_INDEX = 0;
+  const WatchedFilmsChart = getWatchedFilmsChart(films, dateTo, dateFrom, currentInput);
+  const totalDuration = getTotalDuration(WatchedFilmsChart.watchedFilms);
 
   return `<section class="statistic">
     <p class="statistic__rank">
       Your rank
       <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-      <span class="statistic__rank-label">Movie buff</span>
+      <span class="statistic__rank-label">${userRank}</span>
     </p>
 
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
@@ -45,7 +111,7 @@ const createStatsTemplate = (data) => {
     <ul class="statistic__text-list">
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">You watched</h4>
-        <p class="statistic__item-text">${watchedFilmsCount}<span class="statistic__item-description">movies</span></p>
+        <p class="statistic__item-text">${WatchedFilmsChart.watchedFilms.length}<span class="statistic__item-description">movies</span></p>
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Total duration</h4>
@@ -53,7 +119,7 @@ const createStatsTemplate = (data) => {
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Top genre</h4>
-        <p class="statistic__item-text">Sci-Fi</p>
+        <p class="statistic__item-text">${WatchedFilmsChart.watchedFilms.length > 0 ? WatchedFilmsChart.uniqGenres[TOP_GENRE_INDEX] : ''}</p>
       </li>
     </ul>
 
@@ -77,14 +143,24 @@ class Stats extends SmartView{
       dateTo: dayjs().toDate(),
       currentInput: 'all-time',
     };
+    this._userRank = document.querySelector('.profile__rating').textContent;
+    this._genresChart = null;
 
     this._onDateRangeButtonClick = this._onDateRangeButtonClick.bind(this);
-
     this._setInnerHandlers();
+    this._setGenresChart();
+  }
+
+  removeElement(){
+    super.removeElement();
+
+    if(this._genresChart !== null){
+      this._genresChart = null;
+    }
   }
 
   getTemplate(){
-    return createStatsTemplate(this._data);
+    return createStatsTemplate(this._data, this._userRank);
   }
 
   _onDateRangeButtonClick(evt){
@@ -103,6 +179,16 @@ class Stats extends SmartView{
     );
   }
 
+  _setGenresChart(){
+    if(this._genresChart !== null){
+      this._genresChart = null;
+    }
+
+    const statisticCtx = this.getElement().querySelector('.statistic__chart');
+
+    this._genresChart = renderGenresChart(statisticCtx, this._data);
+  }
+
   _setInnerHandlers(){
     this.getElement()
       .querySelectorAll('.statistic__filters-input')
@@ -110,6 +196,7 @@ class Stats extends SmartView{
   }
 
   restoreHandlers(){
+    this._setGenresChart();
     this._setInnerHandlers();
   }
 }

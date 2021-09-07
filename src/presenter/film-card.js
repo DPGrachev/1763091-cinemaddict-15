@@ -112,6 +112,7 @@ class FilmCard{
             card.userDetails,
             {
               isAlreadyWatched: !card.userDetails.isAlreadyWatched,
+              watchingDate: card.userDetails.watchingDate === null ? card.filmInfo.release.date : null,
             },
           ),
         },

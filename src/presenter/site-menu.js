@@ -12,7 +12,7 @@ class SiteMenu {
     this._filterModel = filterModel;
     this._moviesModel = moviesModel;
     this._contentBoard = contentBoard;
-    this._stats = new StatsView(this._moviesModel.getFilms());
+    this._stats = null;
 
     this._siteMenuComponent = null;
     this._headerProfileComponent = null;
@@ -39,9 +39,6 @@ class SiteMenu {
     if(prevSiteMenuComponent === null && prevHeaderProfileComponent === null){
       render(this._headerContainer, this._headerProfileComponent, RenderPosition.BEFOREEND);
       render(this._mainContainer, this._siteMenuComponent, RenderPosition.BEFOREEND);
-      //добавил на время разработки
-      render(this._mainContainer, this._stats, RenderPosition.BEFOREEND);
-
       return;
     }
 
@@ -56,7 +53,11 @@ class SiteMenu {
   }
 
   _handleStatsButtonClick(){
+    if(this._stats !== null){
+      this._stats = null;
+    }
     this._contentBoard.destroy();
+    this._stats = new StatsView(this._moviesModel.getFilms());
     this._filterModel.setFilter(null);
     render(this._mainContainer, this._stats, RenderPosition.BEFOREEND);
   }
@@ -69,7 +70,7 @@ class SiteMenu {
       remove(this._stats);
     }
 
-    this._filterModel.setFilter(UpdateType.MAJOR, filterType);
+    this._filterModel.setFilter(filterType, UpdateType.MAJOR);
   }
 
   _getWatchedFilmsCount(){
