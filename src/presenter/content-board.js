@@ -3,6 +3,7 @@ import { sortDateDown, sortRatingDown } from '../utils/card.js';
 import { SortType, UserAction, UpdateType, FilterType } from '../utils/const.js';
 import { filterTypeToCb } from '../utils/filter.js';
 import SortFilmsView from '../view/sort-films.js';
+import LoadingView from '../view/loading.js';
 import ContentAreaView from '../view/content-area.js';
 import EmptyFilmsListView from '../view/empty-films-list.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
@@ -12,7 +13,7 @@ const FILMS_COUNT_PER_STEP = 5;
 const EXTRA_FILMS_COUNT = 2;
 
 class ContentBoard {
-  constructor(contentContainer, filmsModel, filterModel){
+  constructor(contentContainer, filmsModel, filterModel,api){
     this._contentContainer = contentContainer;
     this._renderedFilmCardsCount = FILMS_COUNT_PER_STEP;
     this._filmsModel = filmsModel;
@@ -21,6 +22,9 @@ class ContentBoard {
     this._showMoreButton = null;
     this._emptyFilmList = null;
     this._contentArea = null;
+    this._isLoading = true;
+    this._loadingComponent = new LoadingView();
+    this._api = api;
 
     this._filmCardMainPresenter = new Map();
     this._filmCardTopRatedPresenter = new Map();
@@ -69,7 +73,7 @@ class ContentBoard {
   }
 
   _renderFilmCard(card,filmCardContainer){
-    const filmCard = new FilmCardPresenter(filmCardContainer, this._handleViewAction, this._filterModel.getFilter());
+    const filmCard = new FilmCardPresenter(filmCardContainer, this._handleViewAction, this._filterModel.getFilter(), this._api);
     filmCard.init(card);
 
     switch (filmCardContainer) {
@@ -98,6 +102,7 @@ class ContentBoard {
     this._filmCardTopRatedPresenter.clear();
     this._filmCardMostCommentedPresenter.clear();
     remove(this._sortFilms);
+    remove(this._loadingComponent);
     remove(this._contentArea);
 
     if(this._emptyFilmList){
@@ -158,12 +163,21 @@ class ContentBoard {
     }
   }
 
+  _renderLoading(){
+    render(this._contentContainer, this._loadingComponent, RenderPosition.BEFOREEND);
+  }
+
   _renderEmptyFilmList(){
     this._emptyFilmList = new EmptyFilmsListView(this._filterType);
     render(this._contentContainer, this._emptyFilmList, RenderPosition.BEFOREEND);
   }
 
   _renderContenArea(){
+    if(this._isLoading){
+      this._renderLoading();
+      return;
+    }
+
     const filmCards = this._getFilms();
     const filmCardsCount = filmCards.length;
 
@@ -195,7 +209,9 @@ class ContentBoard {
 
   _handleViewAction(actionType, updateType, update) {
     if(actionType === UserAction.UPDATE_FILM_CARD){
-      this._filmsModel.updateFilm(updateType, update);
+      this._api.updateMovie(update).then((response) => {
+        this._filmsModel.updateFilm(updateType, response);
+      });
     }
   }
 
@@ -220,6 +236,12 @@ class ContentBoard {
       }
       case UpdateType.MAJOR: {
         this._clearFilmsList({resetRenderedFilmCardsCount: true, resetSortType: true});
+        this._renderContenArea();
+        break;
+      }
+      case UpdateType.INIT: {
+        this._isLoading = false;
+        remove(this._loadingComponent);
         this._renderContenArea();
         break;
       }
