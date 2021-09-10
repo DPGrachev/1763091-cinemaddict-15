@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 import he from 'he';
-import { nanoid } from 'nanoid';
 import SmartView from './smart';
 import RelativeTime from 'dayjs/plugin/relativeTime';
 import { KeyCode } from '../utils/const';
@@ -230,7 +229,7 @@ class FilmPopup extends SmartView{
       throw new Error('Please, choose emotion');
     }
     return{
-      id: nanoid(),
+      id: 0,
       author: 'Dmitrii Grachev',
       comment: he.encode(this._data.commentText),
       date: dayjs(),

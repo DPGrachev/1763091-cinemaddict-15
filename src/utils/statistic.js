@@ -15,7 +15,7 @@ const TypeOfDateRange = {
 
 const getWatchedFilmsInDateRange = (films, dateFrom, dateTo, currentInput) => {
   if(currentInput === TypeOfDateRange.ALL_TIME){
-    return films.filter((film) => dayjs(film.userDetails.watchingDate).isSameOrBefore(dateTo));
+    return films.filter((film) => dayjs(film.userDetails.watchingDate).isSameOrBefore(dayjs()));
   }
   if(currentInput === TypeOfDateRange.TODAY){
     return films.filter((film) => dayjs(film.userDetails.watchingDate).isSame(dateTo, 'day'));
@@ -50,7 +50,6 @@ const getWatchedFilmsChart = (films, dateTo, dateFrom, currentInput) => {
   const AllWatchedFilmsGenres = getAllWatchedFilmsGenres(WatchedFilmsChart.watchedFilms);
   const uniqGenresWithotSort = getUniqGenres(AllWatchedFilmsGenres);
   const filmsByGenresCount = uniqGenresWithotSort.map((genre) => countFilmsByGenres(AllWatchedFilmsGenres,genre));
-
   let genreAndCount = {};
   uniqGenresWithotSort.forEach((genre, index) => genreAndCount[genre] = filmsByGenresCount[index]);
   genreAndCount = Object.entries(genreAndCount);

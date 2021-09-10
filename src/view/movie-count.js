@@ -1,9 +1,7 @@
 import AbstractView from './abstract';
 
 const createMovieCountTemplate = (allMovies) => (
-  `<section class="footer__statistics">
-  <p>${allMovies.length} movies inside</p>
-  </section>`
+  `<p>${allMovies ? allMovies.length : '0'} movies inside</p>`
 );
 
 class MovieCount extends AbstractView {

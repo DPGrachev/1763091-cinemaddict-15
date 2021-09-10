@@ -7,12 +7,15 @@ import { FilterType } from '../utils/const.js';
 const bodyElement = document.querySelector('body');
 
 class FilmCard{
-  constructor(container, changeData, currentFilterType){
+  constructor(container, changeData, currentFilterType, api){
     this._currentFilterType = currentFilterType;
     this._filmCardContainer = container;
     this._changeData = changeData;
+    this._film = null;
+    this._filmCardId = null;
     this._filmCard = null;
     this._filmPopup = null;
+    this._api = api;
 
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
@@ -27,31 +30,27 @@ class FilmCard{
   init(card){
     const prevFilmCard = this._filmCard;
     const prevFilmPopup = this._filmPopup;
+    this._film = card;
 
-    this._filmCard = new FilmCardView(card);
-    this._filmPopup = new FilmPopupView(card);
+    this._filmCard = new FilmCardView(this._film);
 
     this._filmCard.setOnClick(() => {
-      this._renderPopup(this._filmPopup);
+      this._renderPopup();
     });
     this._filmCard.setOnWatchlistClick(this._handleAddToWatchlistClick);
     this._filmCard.setOnFavoriteClick(this._handleFavoriteClick);
     this._filmCard.setOnWatchedClick(this._handleWatchedClick);
-    this._filmPopup.setOnWatchlistClick(this._handleAddToWatchlistClick);
-    this._filmPopup.setOnFavoriteClick(this._handleFavoriteClick);
-    this._filmPopup.setOnWatchedClick(this._handleWatchedClick);
-    this._filmPopup.setOnCloseButtonClick(this._handlePopapCloseButton);
-    this._filmPopup.setOnDeleteCommentClick(this._handleDeleteCommentClick);
-    this._filmPopup.setSubmitNewComment(this._handleSubmitNewComment);
 
-    if(prevFilmCard === null || prevFilmPopup === null){
+    if(prevFilmCard === null){
       render(this._filmCardContainer, this._filmCard, RenderPosition.BEFOREEND);
       return;
     }
     if(this._filmCardContainer.contains(prevFilmCard.getElement())){
       replace(this._filmCard, prevFilmCard);
     }
-    if(bodyElement.contains(prevFilmPopup.getElement())){
+    if(prevFilmPopup && bodyElement.contains(prevFilmPopup.getElement())){
+      this._filmPopup = new FilmPopupView(this._film);
+      this._setPopupHandlers();
       replace(this._filmPopup, prevFilmPopup);
     }
 
@@ -153,14 +152,35 @@ class FilmCard{
     this._closePopup();
   }
 
-  _renderPopup(popup){
+  _renderPopup(){
     if (bodyElement.querySelector('.film-details')){
       this._closePopup();
     }
-    bodyElement.classList.add('hide-overflow');
-    document.addEventListener('keydown',this._handleEscKeyDown);
-    bodyElement.appendChild(popup.getElement());
-    this._filmPopup.reset(this._filmCard);
+    this._api.getComments(this._film)
+      .then((comments) => {
+        this._film.comments = comments;
+        this._filmPopup = new FilmPopupView(this._film);
+        this._setPopupHandlers();
+
+        bodyElement.classList.add('hide-overflow');
+        document.addEventListener('keydown',this._handleEscKeyDown);
+
+        render(bodyElement, this._filmPopup, RenderPosition.BEFOREEND);
+        this._filmPopup.reset(this._filmCard);
+      })
+      .catch(() => {
+        throw new Error('Не удалось загрузить информацию, попробуйте позже');
+      });
+
+  }
+
+  _setPopupHandlers(){
+    this._filmPopup.setOnWatchlistClick(this._handleAddToWatchlistClick);
+    this._filmPopup.setOnFavoriteClick(this._handleFavoriteClick);
+    this._filmPopup.setOnWatchedClick(this._handleWatchedClick);
+    this._filmPopup.setOnCloseButtonClick(this._handlePopapCloseButton);
+    this._filmPopup.setOnDeleteCommentClick(this._handleDeleteCommentClick);
+    this._filmPopup.setSubmitNewComment(this._handleSubmitNewComment);
   }
 
   destroy(){
