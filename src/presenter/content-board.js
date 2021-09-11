@@ -1,6 +1,6 @@
 import { render, remove, RenderPosition} from '../utils/render.js';
 import { sortDateDown, sortRatingDown } from '../utils/card.js';
-import { SortType, UserAction, UpdateType, FilterType } from '../utils/const.js';
+import { SortType, UserAction, UpdateType, FilterType, State } from '../utils/const.js';
 import { filterTypeToCb } from '../utils/filter.js';
 import SortFilmsView from '../view/sort-films.js';
 import LoadingView from '../view/loading.js';
@@ -208,16 +208,42 @@ class ContentBoard {
   }
 
   _handleViewAction(actionType, updateType, update) {
-    if(actionType === UserAction.UPDATE_FILM_CARD){
-      this._api.updateMovie(update).then((response) => {
-        this._filmsModel.updateFilm(updateType, response);
-      });
+    switch (actionType){
+      case UserAction.UPDATE_FILM_CARD:{
+        this._api.updateMovie(update).then((response) => {
+          this._filmsModel.updateFilm(updateType, response);
+        });
+        break;
+      }
+      case UserAction.ADD_NEW_COMMENT:{
+        this._filmCardMainPresenter.get(update.id).setViewState(State.SENDING_NEW_COMMENT);
+        this._api.addNewComment(update)
+          .then((response)=> {
+            this._filmsModel.updateFilm(updateType, response);
+          })
+          .catch(() => {
+            this._filmCardMainPresenter.get(update.id).setAbortingSendNewComment();
+          });
+        break;
+      }
+      case UserAction.DELETE_COMMENT:{
+        this._filmCardMainPresenter.get(update.id).setViewState(State.DELETING);
+        this._api.deleteComment(update)
+          .then(() => {
+            this._filmsModel.updateFilm(updateType, update);
+          })
+          .catch(() => {
+            this._filmCardMainPresenter.get(update.id).setAbortingDeletingComment();
+          });
+      }
     }
   }
 
   _handleModelEvent(updateType, data) {
+
     switch(updateType){
       case UpdateType.PATCH: {
+
         if(this._filmCardMainPresenter.get(data.id)){
           this._filmCardMainPresenter.get(data.id).init(data);
         }

@@ -29,4 +29,9 @@ const FilterType = {
   FAVORITES: 'Favorites',
 };
 
-export {SortType, KeyCode, UserAction, UpdateType, FilterType};
+const State = {
+  SENDING_NEW_COMMENT: 'SENDING_NEW_COMMENT',
+  DELETING: 'DELETING',
+};
+
+export {SortType, KeyCode, UserAction, UpdateType, FilterType, State};

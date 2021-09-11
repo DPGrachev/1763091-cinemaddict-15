@@ -1,5 +1,5 @@
 import { remove, replace, render, RenderPosition} from '../utils/render.js';
-import { KeyCode, UpdateType, UserAction } from '../utils/const.js';
+import { KeyCode, UpdateType, UserAction, State } from '../utils/const.js';
 import FilmCardView from '../view/film-card.js';
 import FilmPopupView from '../view/film-popup.js';
 import { FilterType } from '../utils/const.js';
@@ -25,13 +25,13 @@ class FilmCard{
     this._handleDeleteCommentClick = this._handleDeleteCommentClick.bind(this);
     this._handleSubmitNewComment = this._handleSubmitNewComment.bind(this);
     this._closePopup = this._closePopup.bind(this);
+    this._resetFormState = this._resetFormState.bind(this);
   }
 
   init(card){
     const prevFilmCard = this._filmCard;
     const prevFilmPopup = this._filmPopup;
     this._film = card;
-
     this._filmCard = new FilmCardView(this._film);
 
     this._filmCard.setOnClick(() => {
@@ -49,13 +49,44 @@ class FilmCard{
       replace(this._filmCard, prevFilmCard);
     }
     if(prevFilmPopup && bodyElement.contains(prevFilmPopup.getElement())){
-      this._filmPopup = new FilmPopupView(this._film);
-      this._setPopupHandlers();
-      replace(this._filmPopup, prevFilmPopup);
+      this._renderPopup();
     }
 
     remove(prevFilmCard);
     remove(prevFilmPopup);
+  }
+
+  _resetFormState(){
+    this._filmPopup.updateData({
+      isDisabledForm: false,
+      isDisabledComment: false,
+      isDeleting: false,
+    });
+  }
+
+  setAbortingSendNewComment(){
+    this._filmPopup.shake(this._filmPopup.getElementOfNewComment() ,this._resetFormState);
+  }
+
+  setAbortingDeletingComment(){
+    this._filmPopup.shake(this._filmPopup.getElementOfDeletingComment() ,this._resetFormState);
+  }
+
+  setViewState(state) {
+    switch (state) {
+      case State.SENDING_NEW_COMMENT:{
+        this._filmPopup.updateData({
+          isDisabledForm: true,
+        });
+        break;
+      }
+      case State.DELETING:
+        this._filmPopup.updateData({
+          isDisabledComment: true,
+          isDeleting: true,
+        });
+        break;
+    }
   }
 
   _handleAddToWatchlistClick(card){
@@ -119,17 +150,17 @@ class FilmCard{
     );
   }
 
-  _handleDeleteCommentClick(card){
+  _handleDeleteCommentClick(film){
     this._changeData(
-      UserAction.UPDATE_FILM_CARD,
+      UserAction.DELETE_COMMENT,
       UpdateType.PATCH,
-      card,
+      film,
     );
   }
 
   _handleSubmitNewComment(card){
     this._changeData(
-      UserAction.UPDATE_FILM_CARD,
+      UserAction.ADD_NEW_COMMENT,
       UpdateType.PATCH,
       card,
     );

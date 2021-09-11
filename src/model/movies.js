@@ -67,7 +67,7 @@ class Films extends AbstractObserver{
   static adaptToServer(film){
     const adaptedFilm = {
       id: film.id,
-      comments: film.comments,
+      comments: film.comments.map((comment) => comment.id ? comment.id : comment),
       'film_info': {
         title:  film.filmInfo.title,
         'alternative_title': film.filmInfo.alternativeTitle,

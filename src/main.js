@@ -7,7 +7,7 @@ import FilterModel from './model/filter.js';
 import ContentBoardPresenter from './presenter/content-board.js';
 import Api from './api.js';
 
-const AUTHORIZATION = 'Basic hSJHBh5hjtjhyg1b30g';
+const AUTHORIZATION = 'Basic hbfb55Df8fh652hyg1b30g';
 const END_POINT = 'https://15.ecmascript.pages.academy/cinemaddict';
 
 const headerElement = document.querySelector('.header');

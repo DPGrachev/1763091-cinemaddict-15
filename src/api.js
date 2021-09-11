@@ -3,6 +3,8 @@ import FilmsModel from './model/movies';
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
 class Api {
@@ -31,6 +33,25 @@ class Api {
     })
       .then(Api.toJSON)
       .then(FilmsModel.adaptToClient);
+  }
+
+  addNewComment(movie) {
+    return this._load({
+      url: `commecnts/${movie.id}`,
+      method: Method.POST,
+      body: JSON.stringify(movie.newComment),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    })
+      .then(Api.toJSON)
+      .then((response) => response = response.movie)
+      .then(FilmsModel.adaptToClient);
+  }
+
+  deleteComment(film) {
+    return this._load({
+      url: `comments/${film.commentToDelete.id}`,
+      method: Method.DELETE,
+    });
   }
 
   _load({

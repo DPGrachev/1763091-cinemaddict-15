@@ -15,7 +15,7 @@ const checkUserDetailsForPopup = (userDetails) => {
   }
 };
 
-const createComment = (comment) => `<li class="film-details__comment">
+const createComment = (comment, isDisabledComment, isDeleting) => `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
       <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
     </span>
@@ -24,13 +24,20 @@ const createComment = (comment) => `<li class="film-details__comment">
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${comment.author}</span>
         <span class="film-details__comment-day">${dayjs().to(dayjs(comment.date))}</span>
-        <button class="film-details__comment-delete" data-id="${comment.id}">Delete</button>
+        <button class="film-details__comment-delete" data-id="${comment.id}" ${isDisabledComment ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete' }</button>
       </p>
     </div>
     </li>`;
 
-const renderComments = (comments) => {
-  const allComments = comments.map((comment) => createComment(comment)).join(' ');
+const renderComments = (data) => {
+  const {comments, commentToDelete, isDisabledComment, isDeleting} = data;
+  const allComments = comments.map((comment) => {
+    if(comment === commentToDelete){
+      return createComment(comment, isDisabledComment, isDeleting);
+    }
+    return createComment(comment);
+  }).join(' ');
+
   return `<ul class="film-details__comments-list">
     ${allComments}
   </ul>`;
@@ -106,14 +113,14 @@ const createFilmPopupTemplate = (data) => `<section class="film-details">
     <div class="film-details__bottom-container">
       <section class="film-details__comments-wrap">
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${data.comments.length}</span></h3>
-          ${renderComments(data.comments)}
+          ${renderComments(data)}
         <div class="film-details__new-comment">
           <div class="film-details__add-emoji-label">
-           ${data.emotion ? `<img src="./images/emoji/${data.emotion}.png" width="55" height="55" alt="emoji">` : ''}
+           ${data.newComment.emotion ? `<img src="./images/emoji/${data.newComment.emotion}.png" width="55" height="55" alt="emoji">` : ''}
           </div>
 
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${data.commentText ? data.commentText : ''}</textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${data.isDisabledForm ? 'disabled' : ''}>${data.newComment.commentText ? data.newComment.commentText : ''}</textarea>
           </label>
 
           <div class="film-details__emoji-list">
@@ -155,6 +162,7 @@ class FilmPopup extends SmartView{
     this._onDeleteCommentClick = this._onDeleteCommentClick.bind(this);
     this._onSubmitNewComment = this._onSubmitNewComment.bind(this);
     this._commentIntputHandler = this._commentIntputHandler.bind(this);
+    this.getElementOfDeletingComment = this.getElementOfDeletingComment.bind(this);
 
     this._setInnerHandlers();
   }
@@ -163,11 +171,25 @@ class FilmPopup extends SmartView{
     return createFilmPopupTemplate(this._data);
   }
 
+  getElementOfDeletingComment(){
+    return this.getElement().querySelectorAll('.film-details__comment')[this._data.comments.indexOf(this._data.commentToDelete)];
+  }
+
+  getElementOfNewComment(){
+    return this.getElement().querySelector('.film-details__new-comment');
+  }
+
   _onEmotionClick(evt){
     evt.preventDefault();
     const scrollTopPosition = this.getElement().scrollTop;
     this.updateData({
-      emotion : evt.target.value,
+      newComment: Object.assign(
+        {},
+        this._data.newComment,
+        {
+          emotion : evt.target.value,
+        },
+      ),
     });
     this.getElement().scrollTop = scrollTopPosition;
     this.getElement()
@@ -186,62 +208,47 @@ class FilmPopup extends SmartView{
 
   _onWatchlistClick(evt) {
     evt.preventDefault();
-    const scrollTopPosition = this.getElement().scrollTop;
     this._callback.onWatchlistClick(this._data);
-    if (document.querySelector('.film-details')){
-      document.querySelector('.film-details').scrollTop = scrollTopPosition;
-    }
   }
 
   _onWatchedClick(evt) {
     evt.preventDefault();
-    const scrollTopPosition = this.getElement().scrollTop;
     this._callback.onWatchedClick(this._data);
-    if (document.querySelector('.film-details')){
-      document.querySelector('.film-details').scrollTop = scrollTopPosition;
-    }
   }
 
   _onFavoriteClick(evt) {
     evt.preventDefault();
-    const scrollTopPosition = this.getElement().scrollTop;
     this._callback.onFavoriteClick(this._data);
-    if (document.querySelector('.film-details')){
-      document.querySelector('.film-details').scrollTop = scrollTopPosition;
-    }
   }
 
   _onSubmitNewComment(evt) {
     evt.preventDefault;
     if(evt.key === KeyCode.ENTER && evt.ctrlKey){
-      this._data.comments.push(this._createNewComment());
+      this._data.newComment = this._createNewComment();
       const scrollTopPosition = this.getElement().scrollTop;
-      this._callback.onSubmitNewComment(FilmPopup.parseDataToFilmCard(this._data));
+      this._callback.onSubmitNewComment(this._data);
       document.querySelector('.film-details').scrollTop = scrollTopPosition;
     }
   }
 
   _createNewComment(){
-    if(!this._data.commentText){
+    if(!this._data.newComment.commentText){
       throw new Error('Please, write new comment');
     }
-    if(!this._data.emotion){
+    if(!this._data.newComment.emotion){
       throw new Error('Please, choose emotion');
     }
     return{
-      id: 0,
-      author: 'Dmitrii Grachev',
-      comment: he.encode(this._data.commentText),
-      date: dayjs(),
-      emotion: this._data.emotion,
+      comment: he.encode(this._data.newComment.commentText),
+      emotion: this._data.newComment.emotion,
     };
   }
 
   _onDeleteCommentClick(evt) {
     evt.preventDefault();
     const scrollTopPosition = this.getElement().scrollTop;
-    this._data.comments = this._data.comments.filter((comment) => comment.id !== evt.target.dataset.id);
-    this._callback.onDeleteClick(FilmPopup.parseDataToFilmCard(this._data));
+    this._data.commentToDelete = this._data.comments.filter((comment) => comment.id === evt.target.dataset.id)[0];
+    this._callback.onDeleteClick(FilmPopup.getDataWithoutDeleteComment(this._data));
     document.querySelector('.film-details').scrollTop = scrollTopPosition;
   }
 
@@ -301,7 +308,13 @@ class FilmPopup extends SmartView{
   _commentIntputHandler(evt){
     evt.preventDefault();
     this.updateData({
-      commentText : evt.target.value,
+      newComment: Object.assign(
+        {},
+        this._data.newComment,
+        {
+          commentText : evt.target.value,
+        },
+      ),
     },true);
   }
 
@@ -310,24 +323,34 @@ class FilmPopup extends SmartView{
       {},
       filmCard,
       {
-        emotion: null,
-        commentText: null,
+        newComment: {
+          emotion: null,
+          commentText: null,
+        },
+        commentToDelete: null,
+        isDisabledForm: false,
+        isDeleting: false,
+        isDisabledComment : false,
       },
     );
   }
 
-  static parseDataToFilmCard(data) {
-    data = Object.assign({}, data);
+  static getDataWithoutDeleteComment(data) {
+    data = Object.assign(
+      {},
+      data,
+      {
+        comments: data.comments.filter((comment) => comment.id !== data.commentToDelete.id),
+      },
+    );
 
-    if (!data.emotion) {
-      data.emotion = null;
-    }
-    if (!data.commentText) {
-      data.commentText = null;
+    if (!data.newComment) {
+      data.newComment = null;
     }
 
-    delete data.emotion;
-    delete data.commentText;
+    delete data.newComment;
+    delete data.isDisabled;
+    delete data.isDeleting;
 
     return data;
   }
