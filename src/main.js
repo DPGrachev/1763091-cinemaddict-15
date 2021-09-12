@@ -7,7 +7,6 @@ import FilterModel from './model/filter.js';
 import ContentBoardPresenter from './presenter/content-board.js';
 import Api from './api/api.js';
 import { toast } from './utils/toast.js';
-// import { isOnline } from './utils/common.js';
 import Store from './api/store.js';
 import Provider from './api/provider.js';
 
