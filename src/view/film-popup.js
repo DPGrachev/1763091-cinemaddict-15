@@ -3,7 +3,9 @@ import he from 'he';
 import SmartView from './smart';
 import RelativeTime from 'dayjs/plugin/relativeTime';
 import { KeyCode } from '../utils/const';
-import { calculateRuntime } from '../utils/common';
+import { calculateRuntime, isOnline } from '../utils/common';
+import { createElement, replace } from '../utils/render.js';
+
 dayjs.extend(RelativeTime);
 
 const getAllGenres = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span> `).join(' ');
@@ -42,6 +44,38 @@ const renderComments = (data) => {
     ${allComments}
   </ul>`;
 };
+
+const createFormNewComment = (data) => `<div class="film-details__new-comment">
+<div class="film-details__add-emoji-label">
+ ${data.newComment.emotion ? `<img src="./images/emoji/${data.newComment.emotion}.png" width="55" height="55" alt="emoji">` : ''}
+</div>
+
+<label class="film-details__comment-label">
+  <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${data.isDisabledForm ? 'disabled' : ''}>${data.newComment.commentText ? data.newComment.commentText : ''}</textarea>
+</label>
+
+<div class="film-details__emoji-list">
+  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
+  <label class="film-details__emoji-label" for="emoji-smile">
+    <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
+  </label>
+
+  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
+  <label class="film-details__emoji-label" for="emoji-sleeping">
+    <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
+  </label>
+
+  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
+  <label class="film-details__emoji-label" for="emoji-puke">
+    <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
+  </label>
+
+  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
+  <label class="film-details__emoji-label" for="emoji-angry">
+    <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
+  </label>
+</div>
+</div>`;
 
 const createFilmPopupTemplate = (data) => `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -112,39 +146,9 @@ const createFilmPopupTemplate = (data) => `<section class="film-details">
 
     <div class="film-details__bottom-container">
       <section class="film-details__comments-wrap">
-        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${data.comments.length}</span></h3>
-          ${renderComments(data)}
-        <div class="film-details__new-comment">
-          <div class="film-details__add-emoji-label">
-           ${data.newComment.emotion ? `<img src="./images/emoji/${data.newComment.emotion}.png" width="55" height="55" alt="emoji">` : ''}
-          </div>
-
-          <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${data.isDisabledForm ? 'disabled' : ''}>${data.newComment.commentText ? data.newComment.commentText : ''}</textarea>
-          </label>
-
-          <div class="film-details__emoji-list">
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
-            <label class="film-details__emoji-label" for="emoji-smile">
-              <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
-            <label class="film-details__emoji-label" for="emoji-sleeping">
-              <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
-            <label class="film-details__emoji-label" for="emoji-puke">
-              <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
-            <label class="film-details__emoji-label" for="emoji-angry">
-              <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-            </label>
-          </div>
-        </div>
+        <h3 class="film-details__comments-title">${!isOnline() ? 'не удалось загрузить комментарии' : `Comments <span class="film-details__comments-count"> ${data.comments.length}</span>`}</h3>
+          ${isOnline() ? renderComments(data) : ''}
+          ${isOnline() ? createFormNewComment(data) : ''}
       </section>
     </div>
   </form>
@@ -179,6 +183,16 @@ class FilmPopup extends SmartView{
     return this.getElement().querySelector('.film-details__new-comment');
   }
 
+  _changeEmotion(newEmotion){
+    const createEmotionElement = (emotion) => createElement(`<div class="film-details__add-emoji-label">
+    ${emotion ? `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji">` : ''}
+   </div>`);
+    const oldEmotionElement = document.querySelector('.film-details__add-emoji-label');
+    const newEmotionElement = createEmotionElement(newEmotion);
+
+    replace(newEmotionElement, oldEmotionElement);
+  }
+
   _onEmotionClick(evt){
     evt.preventDefault();
     const scrollTopPosition = this.getElement().scrollTop;
@@ -190,7 +204,8 @@ class FilmPopup extends SmartView{
           emotion : evt.target.value,
         },
       ),
-    });
+    }, true);
+    this._changeEmotion(evt.target.value);
     this.getElement().scrollTop = scrollTopPosition;
     this.getElement()
       .querySelectorAll('.film-details__emoji-item')
@@ -273,26 +288,32 @@ class FilmPopup extends SmartView{
   }
 
   setOnDeleteCommentClick(callback) {
-    this._callback.onDeleteClick = callback;
-    this.getElement()
-      .querySelectorAll('.film-details__comment-delete')
-      .forEach((button) => button.addEventListener('click', this._onDeleteCommentClick));
+    if(isOnline()){
+      this._callback.onDeleteClick = callback;
+      this.getElement()
+        .querySelectorAll('.film-details__comment-delete')
+        .forEach((button) => button.addEventListener('click', this._onDeleteCommentClick));
+    }
   }
 
   setSubmitNewComment(callback) {
-    this._callback.onSubmitNewComment = callback;
-    this.getElement()
-      .querySelector('.film-details__comment-input')
-      .addEventListener('keydown', this._onSubmitNewComment);
+    if(isOnline()){
+      this._callback.onSubmitNewComment = callback;
+      this.getElement()
+        .querySelector('.film-details__comment-input')
+        .addEventListener('keydown', this._onSubmitNewComment);
+    }
   }
 
   _setInnerHandlers(){
-    this.getElement()
-      .querySelectorAll('.film-details__emoji-item')
-      .forEach((emotion) => emotion.addEventListener('click', this._onEmotionClick));
-    this.getElement()
-      .querySelector('.film-details__comment-input')
-      .addEventListener('input', this._commentIntputHandler);
+    if(isOnline()){
+      this.getElement()
+        .querySelectorAll('.film-details__emoji-item')
+        .forEach((emotion) => emotion.addEventListener('click', this._onEmotionClick));
+      this.getElement()
+        .querySelector('.film-details__comment-input')
+        .addEventListener('input', this._commentIntputHandler);
+    }
   }
 
   restoreHandlers(){

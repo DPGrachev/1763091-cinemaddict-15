@@ -63,6 +63,23 @@
   animation: shake 0.6s;
 }
 
+.toast-container {
+  position: absolute;
+  top: 20px;
+  left: 30px;
+  
+}
+
+.toast-item {
+  width: 550px;
+  color: #a11919;
+  background-color: #000000;
+  font-size: 34px;
+  text-align: center;
+  border: #a11919 solid 1px;
+  margin-bottom: 3px;
+}
+
 html {
   background: #121213 url('../images/background.png') no-repeat 60% 0;
   display: flex;
