@@ -3,7 +3,7 @@ import { sortDateDown, sortRatingDown } from '../utils/card.js';
 import { SortType, UserAction, UpdateType, FilterType, State } from '../utils/const.js';
 import { filterTypeToCb } from '../utils/filter.js';
 import SortFilmsView from '../view/sort-films.js';
-import LoadingView from '../view/loading.js';
+import LoadingComponentView from '../view/loading-component.js';
 import ContentAreaView from '../view/content-area.js';
 import EmptyFilmsListView from '../view/empty-films-list.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
@@ -27,7 +27,7 @@ class ContentBoard {
     this._emptyFilmList = null;
     this._contentArea = null;
     this._isLoading = true;
-    this._loadingComponent = new LoadingView();
+    this._loadingComponent = new LoadingComponentView();
     this._mostCommentedFilmsComponent = null;
     this._api = api;
 
@@ -37,14 +37,14 @@ class ContentBoard {
     this._currentSortType = SortType.DEFAULT;
     this._filterType = FilterType.ALL;
 
-    this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
-    this._handleViewAction = this._handleViewAction.bind(this);
-    this._handleModelEvent = this._handleModelEvent.bind(this);
-    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+    this._onShowMoreButtonClick = this._onShowMoreButtonClick.bind(this);
+    this._onViewAction = this._onViewAction.bind(this);
+    this._onModelEvent = this._onModelEvent.bind(this);
+    this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this.destroy = this.destroy.bind(this);
 
-    this._filmsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
+    this._filmsModel.addObserver(this._onModelEvent);
+    this._filterModel.addObserver(this._onModelEvent);
   }
 
   init(){
@@ -74,11 +74,11 @@ class ContentBoard {
 
     this._sortFilms = new SortFilmsView(this._currentSortType);
     render(this._contentContainer, this._sortFilms, RenderPosition.BEFOREEND);
-    this._sortFilms.setSortTypeChangeHandler(this._handleSortTypeChange);
+    this._sortFilms.setOnSortTypeChange(this._onSortTypeChange);
   }
 
   _renderFilmCard(card,filmCardContainer){
-    const filmCard = new FilmCardPresenter(filmCardContainer, this._handleViewAction, this._filterModel.getFilter(), this._api);
+    const filmCard = new FilmCardPresenter(filmCardContainer, this._onViewAction, this._filterModel.getFilter(), this._api);
     filmCard.init(card);
 
     switch (filmCardContainer) {
@@ -125,7 +125,7 @@ class ContentBoard {
     filmCards.forEach((card) => this._renderFilmCard(card, container));
   }
 
-  _handleShowMoreButtonClick(){
+  _onShowMoreButtonClick(){
     const filmCardsCount = this._getFilms().length;
     const newRenderedFilmCardsCount= Math.min(filmCardsCount, this._renderedFilmCardsCount + FILMS_COUNT_PER_STEP);
     const filmCards = this._getFilms().slice(this._renderedFilmCardsCount,newRenderedFilmCardsCount);
@@ -136,7 +136,7 @@ class ContentBoard {
     }
   }
 
-  _handleSortTypeChange(sortType){
+  _onSortTypeChange(sortType){
     if (this._currentSortType === sortType) {
       return;
     }
@@ -150,7 +150,7 @@ class ContentBoard {
     const filmsList = document.querySelector('.films-list');
     render(filmsList,this._showMoreButton, RenderPosition.BEFOREEND);
 
-    this._showMoreButton.setClickHandler(this._handleShowMoreButtonClick);
+    this._showMoreButton.setOnClick(this._onShowMoreButtonClick);
   }
 
   _renderTopRatedFilms(){
@@ -253,7 +253,7 @@ class ContentBoard {
     this._clearFilmsList({resetRenderedFilmCardsCount: true, resetSortType: true});
   }
 
-  _handleViewAction(actionType, updateType, update) {
+  _onViewAction(actionType, updateType, update) {
     switch (actionType){
       case UserAction.UPDATE_FILM_CARD:{
         this._api.updateMovie(update).then((response) => {
@@ -302,7 +302,7 @@ class ContentBoard {
     }
   }
 
-  _handleModelEvent(updateType, data) {
+  _onModelEvent(updateType, data) {
 
     switch(updateType){
       case UpdateType.PATCH: {

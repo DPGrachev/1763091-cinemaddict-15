@@ -23,7 +23,7 @@ class FilmCard{
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleAddToWatchlistClick = this._handleAddToWatchlistClick.bind(this);
-    this._handleEscKeyDown = this._handleEscKeyDown.bind(this);
+    this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._handlePopapCloseButton = this._handlePopapCloseButton.bind(this);
     this._handleDeleteCommentClick = this._handleDeleteCommentClick.bind(this);
     this._handleSubmitNewComment = this._handleSubmitNewComment.bind(this);
@@ -174,18 +174,18 @@ class FilmCard{
     );
   }
 
-  _closePopup(){
-    this._filmPopup = null;
-    document.removeEventListener('keydown', this._handleEscKeyDown);
-    bodyElement.removeChild(bodyElement.querySelector('.film-details'));
-    bodyElement.classList.remove('hide-overflow');
-  }
-
-  _handleEscKeyDown(evt){
+  _onEscKeyDown(evt){
     if (evt.key === KeyCode.ESCAPE) {
       evt.preventDefault();
       this._closePopup();
     }
+  }
+
+  _closePopup(){
+    document.removeEventListener('keydown', this._onEscKeyDown);
+    this._filmPopup = null;
+    bodyElement.querySelector('.film-details').remove();
+    bodyElement.classList.remove('hide-overflow');
   }
 
   _handlePopapCloseButton () {
@@ -216,7 +216,7 @@ class FilmCard{
     this._setPopupHandlers();
 
     bodyElement.classList.add('hide-overflow');
-    document.addEventListener('keydown',this._handleEscKeyDown);
+    document.addEventListener('keydown',this._onEscKeyDown);
 
     render(bodyElement, this._filmPopup, RenderPosition.BEFOREEND);
     this._filmPopup.reset(this._filmCard);

@@ -7,10 +7,10 @@ const createLoadingTemplate = () => (`<section class="films">
   </section>`
 );
 
-class Loading extends AbstractView{
+class LoadingComponent extends AbstractView{
   getTemplate(){
     return createLoadingTemplate();
   }
 }
 
-export default Loading;
+export default LoadingComponent;

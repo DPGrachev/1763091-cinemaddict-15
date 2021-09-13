@@ -9,19 +9,19 @@ const createSortFilmsTemplate = (sortType) => (
   </ul>`
 );
 
-class SortFilms extends AbstractView {
+class SortFilmsComponent extends AbstractView {
   constructor(sortType){
     super();
 
     this._currentSortType = sortType;
-    this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
+    this._onSortTypeChange = this._onSortTypeChange.bind(this);
   }
 
   getTemplate() {
     return createSortFilmsTemplate(this._currentSortType);
   }
 
-  _sortTypeChangeHandler(evt){
+  _onSortTypeChange(evt){
     if(!evt.target.dataset.sortType){
       return;
     }
@@ -32,11 +32,11 @@ class SortFilms extends AbstractView {
     evt.target.classList.add('sort__button--active');
   }
 
-  setSortTypeChangeHandler(callback){
+  setOnSortTypeChange(callback){
     this._callback.sortTypeChange = callback;
-    this.getElement().addEventListener('click', this._sortTypeChangeHandler);
+    this.getElement().addEventListener('click', this._onSortTypeChange);
   }
 
 }
 
-export default SortFilms;
+export default SortFilmsComponent;

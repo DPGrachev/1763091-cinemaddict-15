@@ -17,13 +17,13 @@ class SiteMenu {
     this._siteMenuComponent = null;
     this._headerProfileComponent = null;
 
-    this._handleFilterTypeChange = this._handleFilterTypeChange.bind(this);
-    this._handleModelEvent = this._handleModelEvent.bind(this);
+    this._onFilterTypeChange = this._onFilterTypeChange.bind(this);
+    this._onModelEvent = this._onModelEvent.bind(this);
     this._getWatchedFilmsCount = this._getWatchedFilmsCount.bind(this);
-    this._handleStatsButtonClick = this._handleStatsButtonClick.bind(this);
+    this._onStatsButtonClick = this._onStatsButtonClick.bind(this);
 
-    this._filterModel.addObserver(this._handleModelEvent);
-    this._moviesModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._onModelEvent);
+    this._moviesModel.addObserver(this._onModelEvent);
   }
 
   init(){
@@ -32,8 +32,8 @@ class SiteMenu {
     const prevHeaderProfileComponent = this._headerProfileComponent;
 
     this._siteMenuComponent = new SiteMenuView(filters, this._filterModel.getFilter());
-    this._siteMenuComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
-    this._siteMenuComponent.setOnStatsButtonClick(this._handleStatsButtonClick);
+    this._siteMenuComponent.setOnFilterTypeChange(this._onFilterTypeChange);
+    this._siteMenuComponent.setOnStatsButtonClick(this._onStatsButtonClick);
     this._headerProfileComponent = new HeaderProfileView(this._getWatchedFilmsCount());
 
     if(prevSiteMenuComponent === null && prevHeaderProfileComponent === null){
@@ -48,11 +48,11 @@ class SiteMenu {
     remove(prevSiteMenuComponent);
   }
 
-  _handleModelEvent() {
+  _onModelEvent() {
     this.init();
   }
 
-  _handleStatsButtonClick(){
+  _onStatsButtonClick(){
     if(this._stats !== null){
       this._stats = null;
     }
@@ -62,7 +62,7 @@ class SiteMenu {
     render(this._mainContainer, this._stats, RenderPosition.BEFOREEND);
   }
 
-  _handleFilterTypeChange(filterType) {
+  _onFilterTypeChange(filterType) {
     if (this._filterModel.getFilter() === filterType) {
       return;
     }

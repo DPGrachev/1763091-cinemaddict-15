@@ -6,10 +6,10 @@ const createMostCommentedFilmsTemplate = () => `<section class="films-list films
   </div>
   </section>`;
 
-class MostCommentedFilms extends AbstractView{
+class MostCommentedFilmsComponent extends AbstractView{
   getTemplate(){
     return createMostCommentedFilmsTemplate();
   }
 }
 
-export default MostCommentedFilms;
+export default MostCommentedFilmsComponent;

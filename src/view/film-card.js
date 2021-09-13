@@ -43,6 +43,10 @@ class FilmCard extends AbstractView{
     return createFilmCardTemplate(this._card);
   }
 
+  getCard(){
+    return this._card;
+  }
+
   _onClick(evt) {
     evt.preventDefault();
     this._callback.click();
@@ -83,10 +87,6 @@ class FilmCard extends AbstractView{
   setOnFavoriteClick(callback) {
     this._callback.onFavoriteClick = callback;
     this.getElement().querySelector('.film-card__controls-item--favorite').addEventListener('click', this._onFavoriteClick);
-  }
-
-  getCard(){
-    return this._card;
   }
 }
 

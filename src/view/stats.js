@@ -147,16 +147,16 @@ class Stats extends SmartView{
     this._setGenresChart();
   }
 
+  getTemplate(){
+    return createStatsTemplate(this._data, this._userRank);
+  }
+
   removeElement(){
     super.removeElement();
 
     if(this._genresChart !== null){
       this._genresChart = null;
     }
-  }
-
-  getTemplate(){
-    return createStatsTemplate(this._data, this._userRank);
   }
 
   _onDateRangeButtonClick(evt){

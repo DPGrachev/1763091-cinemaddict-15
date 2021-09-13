@@ -1,5 +1,5 @@
 import FilmsModel from '../model/movies.js';
-import {isOnline} from '../utils/common.js';
+import { isOnline } from '../utils/common.js';
 
 const getSyncedFilms = (items) =>
   items
@@ -44,8 +44,7 @@ class Provider {
       return this._api.getComments(film);
     }
 
-    const storeFilms = Object.values(this._store.getItems());
-    return Promise.resolve(storeFilms[film.id].comments);
+    return Promise.reject(new Error('Open popup failed'));
   }
 
   updateMovie(movie) {
