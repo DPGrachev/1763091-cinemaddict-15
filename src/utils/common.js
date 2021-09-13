@@ -5,4 +5,6 @@ const calculateRuntime = (runtime) => {
   return `${hours}h ${minutes}m`;
 };
 
-export {calculateRuntime};
+const isOnline = () => window.navigator.onLine;
+
+export {calculateRuntime, isOnline};

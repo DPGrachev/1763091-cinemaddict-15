@@ -8,6 +8,7 @@ import ContentAreaView from '../view/content-area.js';
 import EmptyFilmsListView from '../view/empty-films-list.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 import FilmCardPresenter from './film-card.js';
+import { isOnline } from '../utils/common.js';
 
 const FILMS_COUNT_PER_STEP = 5;
 const EXTRA_FILMS_COUNT = 2;
@@ -216,6 +217,9 @@ class ContentBoard {
         break;
       }
       case UserAction.ADD_NEW_COMMENT:{
+        if(!isOnline()){
+          return this._filmCardMainPresenter.get(update.id).setAbortingSendNewComment();
+        }
         this._filmCardMainPresenter.get(update.id).setViewState(State.SENDING_NEW_COMMENT);
         this._api.addNewComment(update)
           .then((response)=> {

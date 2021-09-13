@@ -3,7 +3,10 @@ import { KeyCode, UpdateType, UserAction, State } from '../utils/const.js';
 import FilmCardView from '../view/film-card.js';
 import FilmPopupView from '../view/film-popup.js';
 import { FilterType } from '../utils/const.js';
+import { isOnline } from '../utils/common.js';
+import { toast } from '../utils/toast.js';
 
+const SHOW_TIME = 5000;
 const bodyElement = document.querySelector('body');
 
 class FilmCard{
@@ -80,12 +83,13 @@ class FilmCard{
         });
         break;
       }
-      case State.DELETING:
+      case State.DELETING:{
         this._filmPopup.updateData({
           isDisabledComment: true,
           isDeleting: true,
         });
         break;
+      }
     }
   }
 
@@ -187,22 +191,30 @@ class FilmCard{
     if (bodyElement.querySelector('.film-details')){
       this._closePopup();
     }
-    this._api.getComments(this._film)
-      .then((comments) => {
-        this._film.comments = comments;
-        this._filmPopup = new FilmPopupView(this._film);
-        this._setPopupHandlers();
+    if(isOnline()){
+      return this._api.getComments(this._film)
+        .then((comments) => {
+          this._createPopup(comments);
+        })
+        .catch(() => {
+          throw new Error('Не удалось загрузить информацию, попробуйте позже');
+        });
+    }
+    toast('Добавление и удаление комментариев в режиме офлайн недоступно.', SHOW_TIME);
+    return this._createPopup(this._film.comments);
 
-        bodyElement.classList.add('hide-overflow');
-        document.addEventListener('keydown',this._handleEscKeyDown);
+  }
 
-        render(bodyElement, this._filmPopup, RenderPosition.BEFOREEND);
-        this._filmPopup.reset(this._filmCard);
-      })
-      .catch(() => {
-        throw new Error('Не удалось загрузить информацию, попробуйте позже');
-      });
+  _createPopup(comments){
+    this._film.comments = comments;
+    this._filmPopup = new FilmPopupView(this._film);
+    this._setPopupHandlers();
 
+    bodyElement.classList.add('hide-overflow');
+    document.addEventListener('keydown',this._handleEscKeyDown);
+
+    render(bodyElement, this._filmPopup, RenderPosition.BEFOREEND);
+    this._filmPopup.reset(this._filmCard);
   }
 
   _setPopupHandlers(){
