@@ -164,6 +164,11 @@ class ContentBoard {
     }
   }
 
+  _clearMostCommentedFilms(){
+    this._filmCardMostCommentedPresenter.forEach((presenter) => presenter.destroy());
+    this._filmCardMostCommentedPresenter.clear();
+  }
+
   _renderLoading(){
     render(this._contentContainer, this._loadingComponent, RenderPosition.BEFOREEND);
   }
@@ -220,10 +225,13 @@ class ContentBoard {
         if(!isOnline()){
           return this._filmCardMainPresenter.get(update.id).setAbortingSendNewComment();
         }
-        this._filmCardMainPresenter.get(update.id).setViewState(State.SENDING_NEW_COMMENT);
+        this._setViewStateInOpenPopup(update.id, State.SENDING_NEW_COMMENT);
+        // this._filmCardMainPresenter.get(update.id).setViewState(State.SENDING_NEW_COMMENT);
         this._api.addNewComment(update)
           .then((response)=> {
             this._filmsModel.updateFilm(updateType, response);
+            this._clearMostCommentedFilms();
+            this._renderMostCommentedFilms();
           })
           .catch(() => {
             this._filmCardMainPresenter.get(update.id).setAbortingSendNewComment();
@@ -231,10 +239,13 @@ class ContentBoard {
         break;
       }
       case UserAction.DELETE_COMMENT:{
-        this._filmCardMainPresenter.get(update.id).setViewState(State.DELETING);
+        this._setViewStateInOpenPopup(update.id, State.DELETING);
+        // this._filmCardMainPresenter.get(update.id).setViewState(State.DELETING);
         this._api.deleteComment(update)
           .then(() => {
             this._filmsModel.updateFilm(updateType, update);
+            this._clearMostCommentedFilms();
+            this._renderMostCommentedFilms();
           })
           .catch(() => {
             this._filmCardMainPresenter.get(update.id).setAbortingDeletingComment();
@@ -243,11 +254,22 @@ class ContentBoard {
     }
   }
 
+  _setViewStateInOpenPopup(filmId,state){
+    if(this._filmCardMainPresenter.get(filmId) && this._filmCardMainPresenter.get(filmId).getPopup()){
+      this._filmCardMainPresenter.get(filmId).setViewState(state);
+    }
+    if(this._filmCardTopRatedPresenter.get(filmId) && this._filmCardTopRatedPresenter.get(filmId).getPopup()){
+      this._filmCardTopRatedPresenter.get(filmId).setViewState(state);
+    }
+    if(this._filmCardMostCommentedPresenter.get(filmId) && this._filmCardMostCommentedPresenter.get(filmId).getPopup()){
+      this._filmCardMostCommentedPresenter.get(filmId).setViewState(state);
+    }
+  }
+
   _handleModelEvent(updateType, data) {
 
     switch(updateType){
       case UpdateType.PATCH: {
-
         if(this._filmCardMainPresenter.get(data.id)){
           this._filmCardMainPresenter.get(data.id).init(data);
         }

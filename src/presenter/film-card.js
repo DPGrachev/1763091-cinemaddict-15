@@ -31,6 +31,10 @@ class FilmCard{
     this._resetFormState = this._resetFormState.bind(this);
   }
 
+  getPopup(){
+    return this._filmPopup;
+  }
+
   init(card){
     const prevFilmCard = this._filmCard;
     const prevFilmPopup = this._filmPopup;
@@ -171,6 +175,7 @@ class FilmCard{
   }
 
   _closePopup(){
+    this._filmPopup = null;
     document.removeEventListener('keydown', this._handleEscKeyDown);
     bodyElement.removeChild(bodyElement.querySelector('.film-details'));
     bodyElement.classList.remove('hide-overflow');
