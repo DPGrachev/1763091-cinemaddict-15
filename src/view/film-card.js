@@ -2,6 +2,8 @@ import dayjs from 'dayjs';
 import AbstractView from './abstract';
 import { calculateRuntime } from '../utils/common';
 
+const MAX_DESCRIPTION_LENGTH = 140;
+const MAX_CUT_DESCRIPTION_LENGTH = 139;
 
 const checkUserDetailsForCard = (userDetails) => {
   if(userDetails){
@@ -19,7 +21,7 @@ const createFilmCardTemplate = (card) => {
     <span class="film-card__genre">${firstGenre}</span>
   </p>
   <img src="${poster}"" class="film-card__poster">
-  <p class="film-card__description">${description.length <= 140 ? description : `${description.substr(0,139)}...`}</p>
+  <p class="film-card__description">${description.length <= MAX_DESCRIPTION_LENGTH ? description : `${description.substr(0,MAX_CUT_DESCRIPTION_LENGTH)}...`}</p>
   <a class="film-card__comments">${comments.length} comments</a>
   <div class="film-card__controls">
     <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${checkUserDetailsForCard(userDetails.isWatchlist)}" type="button">Add to watchlist</button>

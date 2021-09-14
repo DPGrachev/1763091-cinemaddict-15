@@ -42,6 +42,7 @@ class ContentBoard {
     this._onModelEvent = this._onModelEvent.bind(this);
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this.destroy = this.destroy.bind(this);
+    this._closeOpenedPopup = this._closeOpenedPopup.bind(this);
 
     this._filmsModel.addObserver(this._onModelEvent);
     this._filterModel.addObserver(this._onModelEvent);
@@ -78,7 +79,7 @@ class ContentBoard {
   }
 
   _renderFilmCard(card,filmCardContainer){
-    const filmCard = new FilmCardPresenter(filmCardContainer, this._onViewAction, this._filterModel.getFilter(), this._api);
+    const filmCard = new FilmCardPresenter(filmCardContainer, this._onViewAction, this._filterModel.getFilter(), this._api, this._closeOpenedPopup);
     filmCard.init(card);
 
     switch (filmCardContainer) {
@@ -119,6 +120,12 @@ class ContentBoard {
     if(resetSortType){
       this._currentSortType = SortType.DEFAULT;
     }
+  }
+
+  _closeOpenedPopup(){
+    this._filmCardMainPresenter.forEach((presenter) => presenter.destroyPopup());
+    this._filmCardTopRatedPresenter.forEach((presenter) => presenter.destroyPopup());
+    this._filmCardMostCommentedPresenter.forEach((presenter) => presenter.destroyPopup());
   }
 
   _renderFilmCards(filmCards, container){
