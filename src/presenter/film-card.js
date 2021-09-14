@@ -201,9 +201,6 @@ class FilmCard{
   }
 
   _renderPopup(){
-    // if (bodyElement.querySelector('.film-details')){
-    //   this._closePopup();
-    // }
     this._closeOpenedPopup();
     if(isOnline()){
       return this._api.getComments(this._film)
