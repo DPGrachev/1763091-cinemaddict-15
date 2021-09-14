@@ -20,11 +20,10 @@ const headerElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
 const footerStatisticElement = document.querySelector('.footer__statistics');
 
-// const apiWithoutProvider = new Api(END_POINT, AUTHORIZATION);
-const api = new Api(END_POINT, AUTHORIZATION);
+const apiWithoutProvider = new Api(END_POINT, AUTHORIZATION);
 
 const store = new Store(STORE_NAME, window.localStorage);
-// const api = new Provider(apiWithoutProvider, store);
+const api = new Provider(apiWithoutProvider, store);
 
 const filmsModel = new FilmsModel();
 
@@ -47,9 +46,9 @@ api.getMovies()
     render(footerStatisticElement,new MovieCountView(), RenderPosition.BEFOREEND);
   });
 
-// window.addEventListener('load', () => {
-//   navigator.serviceWorker.register('/sw.js');
-// });
+window.addEventListener('load', () => {
+  navigator.serviceWorker.register('/sw.js');
+});
 
 window.addEventListener('online', () => {
   document.querySelector('.toast-item').remove();
