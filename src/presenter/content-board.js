@@ -2,13 +2,13 @@ import { render, remove, RenderPosition} from '../utils/render.js';
 import { sortDateDown, sortRatingDown } from '../utils/card.js';
 import { SortType, UserAction, UpdateType, FilterType, State } from '../utils/const.js';
 import { filterTypeToCb } from '../utils/filter.js';
-import SortFilmsView from '../view/sort-films.js';
+import SortFilmsView from '../view/sort-films-component.js';
 import LoadingComponentView from '../view/loading-component.js';
 import ContentAreaView from '../view/content-area.js';
 import EmptyFilmsListView from '../view/empty-films-list.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
-import TopRatedFilmsView from '../view/top-rated-films.js';
-import MostCommentedFilmsView from '../view/most-commented-films.js';
+import TopRatedFilmsView from '../view/top-rated-films-component.js';
+import MostCommentedFilmsView from '../view/most-commented-films-component.js';
 import FilmCardPresenter from './film-card.js';
 import { isOnline } from '../utils/common.js';
 
@@ -107,6 +107,7 @@ class ContentBoard {
     this._filmCardMainPresenter.clear();
     this._filmCardTopRatedPresenter.clear();
     this._filmCardMostCommentedPresenter.clear();
+    this._mostCommentedFilmsComponent = null;
     remove(this._sortFilms);
     remove(this._loadingComponent);
     remove(this._contentArea);

@@ -1,4 +1,4 @@
-import FilmsModel from '../model/movies.js';
+import FilmsModel from '../model/films.js';
 import { isOnline } from '../utils/common.js';
 
 const getSyncedFilms = (items) =>

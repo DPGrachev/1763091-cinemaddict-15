@@ -9,7 +9,7 @@ dayjs.extend(RelativeTime);
 
 const getAllGenres = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span> `).join(' ');
 
-const getAllPeople = (peopleArray) => peopleArray.map((people) => people).join(', ');
+const getAllHumans = (humans) => humans.map((human) => human).join(', ');
 const checkUserDetailsForPopup = (userDetails) => {
   if(userDetails){
     return 'film-details__control-button--active';
@@ -108,11 +108,11 @@ const createFilmPopupTemplate = (data) => `<section class="film-details">
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Writers</td>
-              <td class="film-details__cell">${getAllPeople(data.filmInfo.writers)}</td>
+              <td class="film-details__cell">${getAllHumans(data.filmInfo.writers)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Actors</td>
-              <td class="film-details__cell">${getAllPeople(data.filmInfo.actors)}</td>
+              <td class="film-details__cell">${getAllHumans(data.filmInfo.actors)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
