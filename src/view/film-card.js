@@ -2,6 +2,8 @@ import dayjs from 'dayjs';
 import AbstractView from './abstract';
 import { calculateRuntime } from '../utils/common';
 
+const MAX_DESCRIPTION_LENGTH = 140;
+const MAX_CUT_DESCRIPTION_LENGTH = 139;
 
 const checkUserDetailsForCard = (userDetails) => {
   if(userDetails){
@@ -15,11 +17,11 @@ const createFilmCardTemplate = (card) => {
   <p class="film-card__rating">${rating}</p>
   <p class="film-card__info">
     <span class="film-card__year">${dayjs(date).year()}</span>
-    <span class="film-card__duration">${calculateRuntime(runtime)}m</span>
+    <span class="film-card__duration">${calculateRuntime(runtime)}</span>
     <span class="film-card__genre">${firstGenre}</span>
   </p>
   <img src="${poster}"" class="film-card__poster">
-  <p class="film-card__description">${description}</p>
+  <p class="film-card__description">${description.length <= MAX_DESCRIPTION_LENGTH ? description : `${description.substr(0,MAX_CUT_DESCRIPTION_LENGTH)}...`}</p>
   <a class="film-card__comments">${comments.length} comments</a>
   <div class="film-card__controls">
     <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${checkUserDetailsForCard(userDetails.isWatchlist)}" type="button">Add to watchlist</button>
@@ -41,6 +43,10 @@ class FilmCard extends AbstractView{
 
   getTemplate() {
     return createFilmCardTemplate(this._card);
+  }
+
+  getCard(){
+    return this._card;
   }
 
   _onClick(evt) {
@@ -83,10 +89,6 @@ class FilmCard extends AbstractView{
   setOnFavoriteClick(callback) {
     this._callback.onFavoriteClick = callback;
     this.getElement().querySelector('.film-card__controls-item--favorite').addEventListener('click', this._onFavoriteClick);
-  }
-
-  getCard(){
-    return this._card;
   }
 }
 

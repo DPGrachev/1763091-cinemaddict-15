@@ -7,18 +7,7 @@ const createContentAreaTemplate = () => (
     <div class="films-list__container main-films-list">
     </div>
   </section>
-  <section class="films-list films-list--extra ">
-    <h2 class="films-list__title">Top rated</h2>
-
-    <div class="films-list__container top-rated-films-list">
-      
-    </div>
-  </section>
-  <section class="films-list films-list--extra ">
-    <h2 class="films-list__title">Most commented</h2>
-    <div class="films-list__container most-commented-films-list">  
-    </div>
-  </section>
+  
   </section>`
 );
 

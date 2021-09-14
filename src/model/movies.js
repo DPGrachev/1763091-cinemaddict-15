@@ -8,7 +8,6 @@ class Films extends AbstractObserver{
 
   setFilms(updateType, films){
     this._films = films.slice();
-
     this._notify(updateType);
   }
 

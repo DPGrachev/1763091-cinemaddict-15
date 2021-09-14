@@ -10,7 +10,7 @@ import { toast } from './utils/toast.js';
 import Store from './api/store.js';
 import Provider from './api/provider.js';
 
-const AUTHORIZATION = 'Basic hbdvdvd8Df8fh652hyg1b30g';
+const AUTHORIZATION = 'Basic hbdvNfrH678fh652hyg1b30g';
 const END_POINT = 'https://15.ecmascript.pages.academy/cinemaddict';
 const STORE_PREFIX = 'cinemaddict-localstorage';
 const STORE_VER = 'v15';

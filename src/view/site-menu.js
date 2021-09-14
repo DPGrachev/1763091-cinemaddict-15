@@ -23,7 +23,7 @@ class SiteMenu extends AbstractView {
     this._filterButtons = this.getElement().querySelectorAll('.main-navigation__item ');
     this._statsButton = this.getElement().querySelector('.main-navigation__additional');
 
-    this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
+    this._onFilterTypeChange = this._onFilterTypeChange.bind(this);
     this._onStatsButtonClick = this._onStatsButtonClick.bind(this);
   }
 
@@ -32,7 +32,7 @@ class SiteMenu extends AbstractView {
     return createSiteMenuTemplate(this._filter, this._currentFilterType);
   }
 
-  _filterTypeChangeHandler(evt) {
+  _onFilterTypeChange(evt) {
     if(evt.target.dataset.name){
       evt.preventDefault();
       this._callback.filterTypeChange(evt.target.dataset.name);
@@ -48,9 +48,9 @@ class SiteMenu extends AbstractView {
     }
   }
 
-  setFilterTypeChangeHandler(callback) {
+  setOnFilterTypeChange(callback) {
     this._callback.filterTypeChange = callback;
-    this._filterButtons.forEach((filterButton) => filterButton.addEventListener('click', this._filterTypeChangeHandler));
+    this._filterButtons.forEach((filterButton) => filterButton.addEventListener('click', this._onFilterTypeChange));
   }
 
   setOnStatsButtonClick(callback){

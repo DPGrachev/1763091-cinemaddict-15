@@ -10,25 +10,30 @@ const SHOW_TIME = 5000;
 const bodyElement = document.querySelector('body');
 
 class FilmCard{
-  constructor(container, changeData, currentFilterType, api){
+  constructor(container, changeData, currentFilterType, api, closeOpenedPopup){
     this._currentFilterType = currentFilterType;
     this._filmCardContainer = container;
     this._changeData = changeData;
+    this._closeOpenedPopup = closeOpenedPopup;
     this._film = null;
     this._filmCardId = null;
     this._filmCard = null;
     this._filmPopup = null;
     this._api = api;
 
-    this._handleWatchedClick = this._handleWatchedClick.bind(this);
-    this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
-    this._handleAddToWatchlistClick = this._handleAddToWatchlistClick.bind(this);
-    this._handleEscKeyDown = this._handleEscKeyDown.bind(this);
-    this._handlePopapCloseButton = this._handlePopapCloseButton.bind(this);
-    this._handleDeleteCommentClick = this._handleDeleteCommentClick.bind(this);
-    this._handleSubmitNewComment = this._handleSubmitNewComment.bind(this);
+    this._onWatchedClick = this._onWatchedClick.bind(this);
+    this._onFavoriteClick = this._onFavoriteClick.bind(this);
+    this._onAddToWatchlistClick = this._onAddToWatchlistClick.bind(this);
+    this._onEscKeyDown = this._onEscKeyDown.bind(this);
+    this._onPopapCloseButton = this._onPopapCloseButton.bind(this);
+    this._onDeleteCommentClick = this._onDeleteCommentClick.bind(this);
+    this._onNewCommentSubmit = this._onNewCommentSubmit.bind(this);
     this._closePopup = this._closePopup.bind(this);
     this._resetFormState = this._resetFormState.bind(this);
+  }
+
+  getPopup(){
+    return this._filmPopup;
   }
 
   init(card){
@@ -40,9 +45,9 @@ class FilmCard{
     this._filmCard.setOnClick(() => {
       this._renderPopup();
     });
-    this._filmCard.setOnWatchlistClick(this._handleAddToWatchlistClick);
-    this._filmCard.setOnFavoriteClick(this._handleFavoriteClick);
-    this._filmCard.setOnWatchedClick(this._handleWatchedClick);
+    this._filmCard.setOnWatchlistClick(this._onAddToWatchlistClick);
+    this._filmCard.setOnFavoriteClick(this._onFavoriteClick);
+    this._filmCard.setOnWatchedClick(this._onWatchedClick);
 
     if(prevFilmCard === null){
       render(this._filmCardContainer, this._filmCard, RenderPosition.BEFOREEND);
@@ -93,7 +98,7 @@ class FilmCard{
     }
   }
 
-  _handleAddToWatchlistClick(card){
+  _onAddToWatchlistClick(card){
     this._changeData(
       UserAction.UPDATE_FILM_CARD,
       this._currentFilterType === FilterType.WATCHLIST? UpdateType.MINOR : UpdateType.PATCH,
@@ -113,7 +118,7 @@ class FilmCard{
     );
   }
 
-  _handleFavoriteClick(card){
+  _onFavoriteClick(card){
     this._changeData(
       UserAction.UPDATE_FILM_CARD,
       this._currentFilterType === FilterType.FAVORITES? UpdateType.MINOR : UpdateType.PATCH,
@@ -133,7 +138,7 @@ class FilmCard{
     );
   }
 
-  _handleWatchedClick(card){
+  _onWatchedClick(card){
     this._changeData(
       UserAction.UPDATE_FILM_CARD,
       this._currentFilterType === FilterType.HISTORY? UpdateType.MINOR : UpdateType.PATCH,
@@ -154,7 +159,7 @@ class FilmCard{
     );
   }
 
-  _handleDeleteCommentClick(film){
+  _onDeleteCommentClick(film){
     this._changeData(
       UserAction.DELETE_COMMENT,
       UpdateType.PATCH,
@@ -162,7 +167,7 @@ class FilmCard{
     );
   }
 
-  _handleSubmitNewComment(card){
+  _onNewCommentSubmit(card){
     this._changeData(
       UserAction.ADD_NEW_COMMENT,
       UpdateType.PATCH,
@@ -170,27 +175,33 @@ class FilmCard{
     );
   }
 
-  _closePopup(){
-    document.removeEventListener('keydown', this._handleEscKeyDown);
-    bodyElement.removeChild(bodyElement.querySelector('.film-details'));
-    bodyElement.classList.remove('hide-overflow');
-  }
-
-  _handleEscKeyDown(evt){
+  _onEscKeyDown(evt){
     if (evt.key === KeyCode.ESCAPE) {
       evt.preventDefault();
       this._closePopup();
     }
   }
 
-  _handlePopapCloseButton () {
+  _closePopup(){
+    document.removeEventListener('keydown', this._onEscKeyDown);
+    this._filmPopup = null;
+    bodyElement.querySelector('.film-details').remove();
+    bodyElement.classList.remove('hide-overflow');
+  }
+
+  destroyPopup(){
+    if(this._filmPopup === null){
+      return;
+    }
+    this._closePopup();
+  }
+
+  _onPopapCloseButton () {
     this._closePopup();
   }
 
   _renderPopup(){
-    if (bodyElement.querySelector('.film-details')){
-      this._closePopup();
-    }
+    this._closeOpenedPopup();
     if(isOnline()){
       return this._api.getComments(this._film)
         .then((comments) => {
@@ -211,19 +222,19 @@ class FilmCard{
     this._setPopupHandlers();
 
     bodyElement.classList.add('hide-overflow');
-    document.addEventListener('keydown',this._handleEscKeyDown);
+    document.addEventListener('keydown',this._onEscKeyDown);
 
     render(bodyElement, this._filmPopup, RenderPosition.BEFOREEND);
     this._filmPopup.reset(this._filmCard);
   }
 
   _setPopupHandlers(){
-    this._filmPopup.setOnWatchlistClick(this._handleAddToWatchlistClick);
-    this._filmPopup.setOnFavoriteClick(this._handleFavoriteClick);
-    this._filmPopup.setOnWatchedClick(this._handleWatchedClick);
-    this._filmPopup.setOnCloseButtonClick(this._handlePopapCloseButton);
-    this._filmPopup.setOnDeleteCommentClick(this._handleDeleteCommentClick);
-    this._filmPopup.setSubmitNewComment(this._handleSubmitNewComment);
+    this._filmPopup.setOnWatchlistClick(this._onAddToWatchlistClick);
+    this._filmPopup.setOnFavoriteClick(this._onFavoriteClick);
+    this._filmPopup.setOnWatchedClick(this._onWatchedClick);
+    this._filmPopup.setOnCloseButtonClick(this._onPopapCloseButton);
+    this._filmPopup.setOnDeleteCommentClick(this._onDeleteCommentClick);
+    this._filmPopup.setOnNewCommentSubmit(this._onNewCommentSubmit);
   }
 
   destroy(){

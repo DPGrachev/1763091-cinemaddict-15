@@ -5,7 +5,6 @@ import RelativeTime from 'dayjs/plugin/relativeTime';
 import { KeyCode } from '../utils/const';
 import { calculateRuntime, isOnline } from '../utils/common';
 import { createElement, replace } from '../utils/render.js';
-
 dayjs.extend(RelativeTime);
 
 const getAllGenres = (genres) => genres.map((genre) => `<span class="film-details__genre">${genre}</span> `).join(' ');
@@ -164,8 +163,8 @@ class FilmPopup extends SmartView{
     this._onWatchlistClick = this._onWatchlistClick.bind(this);
     this._onFavoriteClick = this._onFavoriteClick.bind(this);
     this._onDeleteCommentClick = this._onDeleteCommentClick.bind(this);
-    this._onSubmitNewComment = this._onSubmitNewComment.bind(this);
-    this._commentIntputHandler = this._commentIntputHandler.bind(this);
+    this._onNewCommentSubmit = this._onNewCommentSubmit.bind(this);
+    this._onCommentIntput = this._onCommentIntput.bind(this);
     this.getElementOfDeletingComment = this.getElementOfDeletingComment.bind(this);
 
     this._setInnerHandlers();
@@ -185,8 +184,8 @@ class FilmPopup extends SmartView{
 
   _changeEmotion(newEmotion){
     const createEmotionElement = (emotion) => createElement(`<div class="film-details__add-emoji-label">
-    ${emotion ? `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji">` : ''}
-   </div>`);
+      ${emotion ? `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji">` : ''}
+      </div>`);
     const oldEmotionElement = document.querySelector('.film-details__add-emoji-label');
     const newEmotionElement = createEmotionElement(newEmotion);
 
@@ -236,7 +235,7 @@ class FilmPopup extends SmartView{
     this._callback.onFavoriteClick(this._data);
   }
 
-  _onSubmitNewComment(evt) {
+  _onNewCommentSubmit(evt) {
     evt.preventDefault;
     if(evt.key === KeyCode.ENTER && evt.ctrlKey){
       this._data.newComment = this._createNewComment();
@@ -265,6 +264,19 @@ class FilmPopup extends SmartView{
     this._data.commentToDelete = this._data.comments.filter((comment) => comment.id === evt.target.dataset.id)[0];
     this._callback.onDeleteClick(FilmPopup.getDataWithoutDeleteComment(this._data));
     document.querySelector('.film-details').scrollTop = scrollTopPosition;
+  }
+
+  _onCommentIntput(evt){
+    evt.preventDefault();
+    this.updateData({
+      newComment: Object.assign(
+        {},
+        this._data.newComment,
+        {
+          commentText : evt.target.value,
+        },
+      ),
+    },true);
   }
 
   setOnCloseButtonClick(callback) {
@@ -296,12 +308,12 @@ class FilmPopup extends SmartView{
     }
   }
 
-  setSubmitNewComment(callback) {
+  setOnNewCommentSubmit(callback) {
     if(isOnline()){
       this._callback.onSubmitNewComment = callback;
       this.getElement()
         .querySelector('.film-details__comment-input')
-        .addEventListener('keydown', this._onSubmitNewComment);
+        .addEventListener('keydown', this._onNewCommentSubmit);
     }
   }
 
@@ -312,7 +324,7 @@ class FilmPopup extends SmartView{
         .forEach((emotion) => emotion.addEventListener('click', this._onEmotionClick));
       this.getElement()
         .querySelector('.film-details__comment-input')
-        .addEventListener('input', this._commentIntputHandler);
+        .addEventListener('input', this._onCommentIntput);
     }
   }
 
@@ -323,20 +335,7 @@ class FilmPopup extends SmartView{
     this.setOnWatchlistClick(this._callback.onWatchlistClick);
     this.setOnCloseButtonClick(this._callback.closeButtonClick);
     this.setOnDeleteCommentClick(this._callback.onDeleteClick);
-    this.setSubmitNewComment(this._callback.onSubmitNewComment);
-  }
-
-  _commentIntputHandler(evt){
-    evt.preventDefault();
-    this.updateData({
-      newComment: Object.assign(
-        {},
-        this._data.newComment,
-        {
-          commentText : evt.target.value,
-        },
-      ),
-    },true);
+    this.setOnNewCommentSubmit(this._callback.onSubmitNewComment);
   }
 
   static parseFilmCardToData(filmCard) {
